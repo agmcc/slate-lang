@@ -1,0 +1,51 @@
+---
+class: CompilationUnitContext
+children:
+  - class: VarDeclarationStatementContext
+    children:
+      - class: VarDeclarationContext
+        children:
+          - class: TerminalNodeImpl
+            text: var
+          - class: AssignmentContext
+            children:
+              - class: TerminalNodeImpl
+                text: sum
+              - class: TerminalNodeImpl
+                text: =
+              - class: BinaryOperationContext
+                children:
+                  - class: BinaryOperationContext
+                    children:
+                      - class: ParenExpressionContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: (
+                          - class: BinaryOperationContext
+                            children:
+                              - class: IntLiteralContext
+                                children:
+                                  - class: TerminalNodeImpl
+                                    text: '10'
+                              - class: TerminalNodeImpl
+                                text: '-'
+                              - class: IntLiteralContext
+                                children:
+                                  - class: TerminalNodeImpl
+                                    text: '6'
+                          - class: TerminalNodeImpl
+                            text: )
+                      - class: TerminalNodeImpl
+                        text: '*'
+                      - class: IntLiteralContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: '4'
+                  - class: TerminalNodeImpl
+                    text: /
+                  - class: IntLiteralContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: '2'
+  - class: TerminalNodeImpl
+    text: <EOF>

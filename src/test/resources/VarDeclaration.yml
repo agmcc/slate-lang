@@ -1,0 +1,21 @@
+---
+class: CompilationUnitContext
+children:
+  - class: VarDeclarationStatementContext
+    children:
+      - class: VarDeclarationContext
+        children:
+          - class: TerminalNodeImpl
+            text: var
+          - class: AssignmentContext
+            children:
+              - class: TerminalNodeImpl
+                text: message
+              - class: TerminalNodeImpl
+                text: =
+              - class: StringLiteralContext
+                children:
+                  - class: TerminalNodeImpl
+                    text: "'Hello, World!'"
+  - class: TerminalNodeImpl
+    text: <EOF>

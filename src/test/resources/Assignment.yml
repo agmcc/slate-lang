@@ -1,0 +1,17 @@
+---
+class: CompilationUnitContext
+children:
+  - class: AssignmentStatementContext
+    children:
+      - class: AssignmentContext
+        children:
+          - class: TerminalNodeImpl
+            text: price
+          - class: TerminalNodeImpl
+            text: =
+          - class: DecimalLiteralContext
+            children:
+              - class: TerminalNodeImpl
+                text: '9.95'
+  - class: TerminalNodeImpl
+    text: <EOF>

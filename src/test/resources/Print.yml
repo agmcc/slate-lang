@@ -1,0 +1,15 @@
+---
+class: CompilationUnitContext
+children:
+  - class: PrintStatementContext
+    children:
+      - class: PrintContext
+        children:
+          - class: TerminalNodeImpl
+            text: print
+          - class: IntLiteralContext
+            children:
+              - class: TerminalNodeImpl
+                text: '100'
+  - class: TerminalNodeImpl
+    text: <EOF>

@@ -5,6 +5,7 @@ WS: [ \t\n\r]+ -> channel(HIDDEN);
 
 // Keywords
 VAR: 'var';
+PRINT: 'print';
 
 // Literals
 DEC_LIT: '0'|[1-9][0-9]*'.'[0-9]+;
