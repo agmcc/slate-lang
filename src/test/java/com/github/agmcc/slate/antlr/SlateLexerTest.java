@@ -3,7 +3,6 @@ package com.github.agmcc.slate.antlr;
 import static com.github.agmcc.slate.antlr.SlateLexer.ADD;
 import static com.github.agmcc.slate.antlr.SlateLexer.ASSIGN;
 import static com.github.agmcc.slate.antlr.SlateLexer.DEC_LIT;
-import static com.github.agmcc.slate.antlr.SlateLexer.DEFAULT_TOKEN_CHANNEL;
 import static com.github.agmcc.slate.antlr.SlateLexer.DIV;
 import static com.github.agmcc.slate.antlr.SlateLexer.HIDDEN;
 import static com.github.agmcc.slate.antlr.SlateLexer.ID;
@@ -15,13 +14,11 @@ import static com.github.agmcc.slate.antlr.SlateLexer.STRING_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.SUB;
 import static com.github.agmcc.slate.antlr.SlateLexer.VAR;
 import static com.github.agmcc.slate.antlr.SlateLexer.WS;
+import static com.github.agmcc.slate.test.ANTLRUtils.getTokenTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -175,18 +172,5 @@ class SlateLexerTest {
 
     // Assert
     assertEquals(List.of(ID), actual);
-  }
-
-  private static List<Integer> getTokenTypes(String src) {
-    return getTokenTypes(src, DEFAULT_TOKEN_CHANNEL);
-  }
-
-  private static List<Integer> getTokenTypes(String src, int channel) {
-    return new SlateLexer(CharStreams.fromString(src))
-        .getAllTokens()
-        .stream()
-        .filter(t -> t.getChannel() == channel)
-        .map(Token::getType)
-        .collect(Collectors.toList());
   }
 }
