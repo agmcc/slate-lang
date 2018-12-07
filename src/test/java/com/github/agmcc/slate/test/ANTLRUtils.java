@@ -4,11 +4,11 @@ import static org.antlr.v4.runtime.Lexer.DEFAULT_TOKEN_CHANNEL;
 
 import com.github.agmcc.slate.antlr.SlateLexer;
 import com.github.agmcc.slate.antlr.SlateParser;
+import com.github.agmcc.slate.antlr.SlateParser.CompilationUnitContext;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
 public final class ANTLRUtils {
@@ -30,7 +30,7 @@ public final class ANTLRUtils {
         .collect(Collectors.toList());
   }
 
-  public static ParserRuleContext parseString(String src) {
+  public static CompilationUnitContext parseString(String src) {
     final var lexer = new SlateLexer(CharStreams.fromString(src));
     final var tokenStream = new CommonTokenStream(lexer);
     final var parser = new SlateParser(tokenStream);
