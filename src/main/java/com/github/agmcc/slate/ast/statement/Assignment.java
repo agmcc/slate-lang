@@ -1,12 +1,25 @@
 package com.github.agmcc.slate.ast.statement;
 
+import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Assignment implements Statement {
 
   private final String varName;
 
   private final Expression value;
+
+  private Position position;
 }

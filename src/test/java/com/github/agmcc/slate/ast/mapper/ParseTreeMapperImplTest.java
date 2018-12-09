@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.agmcc.slate.antlr.SlateParser.CompilationUnitContext;
 import com.github.agmcc.slate.ast.CompilationUnit;
+import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
 import com.github.agmcc.slate.ast.expression.StringLit;
@@ -213,6 +214,29 @@ class ParseTreeMapperImplTest {
 
     // When
     final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_positions() {
+    // Given
+    final var src = "var price = 9.95";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "price",
+                    new DecLit("9.95", Position.of(1, 12, 1, 16)),
+                    Position.of(1, 0, 1, 16))),
+            Position.of(1, 0, 1, 16));
+
+    final var positionMapper = new ParseTreeMapperImpl(true);
+
+    // When
+    final var actual = positionMapper.toAst(ANTLRUtils.parseString(src));
 
     // Then
     assertEquals(expected, actual);
