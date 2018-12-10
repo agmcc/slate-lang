@@ -1,8 +1,14 @@
 package com.github.agmcc.slate.ast;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@EqualsAndHashCode
 public class Point implements Comparable<Point> {
 
   private final int line;
@@ -18,5 +24,10 @@ public class Point implements Comparable<Point> {
     } else {
       return 1;
     }
+  }
+
+  @Override
+  public String toString() {
+    return "[" + line + "," + column + "]";
   }
 }
