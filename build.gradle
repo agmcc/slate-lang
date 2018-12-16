@@ -4,6 +4,7 @@ plugins {
     id 'com.github.sherter.google-java-format' version '0.8'
     id 'idea'
     id 'eclipse'
+    id 'com.github.onslip.gradle-one-jar' version '1.0.5'
 }
 
 repositories {
@@ -21,6 +22,9 @@ dependencies {
 
     implementation 'org.ow2.asm:asm:7.0'
     implementation 'org.ow2.asm:asm-util:7.0'
+
+    runtime 'org.ow2.asm:asm:7.0'
+    runtime 'org.ow2.asm:asm-util:7.0'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.3.1'
@@ -53,3 +57,11 @@ task format {
     group 'build'
     description 'Google Java Format'
 }
+
+task fatJar(type: OneJar) {
+    group 'build'
+    description 'Creates executable JAR with all of the required dependencies'
+    mainClass = 'com.github.agmcc.slate.App'
+}
+
+assemble.dependsOn fatJar

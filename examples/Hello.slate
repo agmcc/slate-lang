@@ -1,0 +1,9 @@
+var user = 'Slate'
+print 'Hello, ' + user
+
+var sum = 1 + (50 - 40) / 2 * 9
+print sum
+
+var price = 10
+price = price / 2
+print price
