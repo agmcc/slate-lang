@@ -1,0 +1,16 @@
+language: java
+
+jdk:
+  - openjdk10
+
+deploy:
+  provider: releases
+  api_key:
+    secure: GJYUrN+sOaMGGQu1zr6p6jdmM8RrjXsqB+1orGWxzuYSv6GJS4CYqKpo7LAzx79HygKb+7HETFwJtnCjEL+HSzyJREnaMx+ycq0z/WOyVcjF3fC/U5UPm4G6Qv3fl2aOks1vo4NB3K2MaoZBKrSqwqaorPKg/AtYhwEQq/N+zuJGA305JzJFAWWtdQAWotvGgN2touvgRRggAJuTkLpTWalWDKKZuTNbmH1pFuuW9PCk3kCDjF5Dgt3EHR67iME73f86Fxsv3/CBaPlNqqu0vL9hKgvHNTg9WebkVMVSU5AOe7zr3PK6kPf4i7/isitZkPzgoZQQhkidgTEYOptBjZWxbATvwaDGbqVBkelQawJmO0/eLTSklPoAP3pM7eRPx25jQBaU9LJ9Wh6KS8nLMh16SYkkUoiDT+cO7cHPQkQcbhQvsEemStGZRwIM804PV8a/jHnPNmscRLa5YyMuo6gGv2r0nnv9+oSL7b2/GVenxz3KH2COcZba7vv+1KeBdxmkb1YmC+hDvZ8qUf4tBbnuW/L6fabBUv6Ik4Zn7/hRKTn83QrA9xJPAs2ajtDr2CcmiSdS9uyREf64Bx45Aa4xsxrjehGbpq2jPVZyp7XTDht0l5Hls83FjSJrWPc2nzZer3xKA6pGM43AellGspCzQjOD6WPU6QzCmQNQD7g=
+  file: "./build/libs/slate-lang-standalone.jar"
+  skip_cleanup: true
+  draft: true
+  prerelease: true
+  overwrite: true
+  on:
+    repo: agmcc/slate-lang
