@@ -79,7 +79,9 @@ public class JvmCompiler {
                 final var variable = variables.get(((VarDeclaration) s).getVarName());
                 final var type = variable.getType();
                 final var index = variable.getIndex();
-                typeHelper.push(((VarDeclaration) s).getValue(), mv, variables);
+
+                typeHelper.push(((VarDeclaration) s).getValue(), mv, variables, type);
+
                 if (type == Type.INT_TYPE) {
                   mv.visitVarInsn(ISTORE, index);
                 } else if (type == Type.DOUBLE_TYPE) {
@@ -94,7 +96,9 @@ public class JvmCompiler {
                 final var variable = variables.get(((Assignment) s).getVarName());
                 final var type = variable.getType();
                 final var index = variable.getIndex();
-                typeHelper.push(((Assignment) s).getValue(), mv, variables);
+
+                typeHelper.push(((Assignment) s).getValue(), mv, variables, type);
+
                 if (type == Type.INT_TYPE) {
                   mv.visitVarInsn(ISTORE, index);
                 } else if (type == Type.DOUBLE_TYPE) {

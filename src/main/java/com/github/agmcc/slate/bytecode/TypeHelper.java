@@ -1,11 +1,13 @@
 package com.github.agmcc.slate.bytecode;
 
 import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.D2I;
 import static org.objectweb.asm.Opcodes.DADD;
 import static org.objectweb.asm.Opcodes.DDIV;
 import static org.objectweb.asm.Opcodes.DLOAD;
 import static org.objectweb.asm.Opcodes.DMUL;
 import static org.objectweb.asm.Opcodes.DSUB;
+import static org.objectweb.asm.Opcodes.I2D;
 import static org.objectweb.asm.Opcodes.IADD;
 import static org.objectweb.asm.Opcodes.IDIV;
 import static org.objectweb.asm.Opcodes.ILOAD;
@@ -68,6 +70,24 @@ public class TypeHelper {
     }
   }
 
+  public void push(
+      Expression expression, MethodVisitor mv, Map<String, Variable> variables, Type targetType) {
+    push(expression, mv, variables);
+    final var type = toType(expression, variables);
+    if (!type.equals(targetType)) {
+      if (type == Type.INT_TYPE && targetType == Type.DOUBLE_TYPE) {
+        mv.visitInsn(I2D);
+      } else if (type == Type.DOUBLE_TYPE && targetType == Type.INT_TYPE) {
+        mv.visitInsn(D2I);
+      } else {
+        throw new UnsupportedOperationException(
+            String.format(
+                "Unable to convert type %s to %s",
+                type.getInternalName(), targetType.getInternalName()));
+      }
+    }
+  }
+
   public void push(Expression expression, MethodVisitor mv, Map<String, Variable> variables) {
     if (expression instanceof IntLit) {
       final var valueStr = ((IntLit) expression).getValue();
@@ -82,8 +102,8 @@ public class TypeHelper {
       mv.visitLdcInsn(((StringLit) expression).getValue());
     } else if (expression instanceof MultiplicationExpression) {
       final var multi = (MultiplicationExpression) expression;
-      push(multi.getLeft(), mv, variables);
-      push(multi.getRight(), mv, variables);
+      push(multi.getLeft(), mv, variables, toType(expression, variables));
+      push(multi.getRight(), mv, variables, toType(expression, variables));
       final var type = toType(multi, variables);
       if (type == Type.INT_TYPE) {
         mv.visitInsn(IMUL);
@@ -94,8 +114,8 @@ public class TypeHelper {
       }
     } else if (expression instanceof DivisionExpression) {
       final var div = (DivisionExpression) expression;
-      push(div.getLeft(), mv, variables);
-      push(div.getRight(), mv, variables);
+      push(div.getLeft(), mv, variables, toType(expression, variables));
+      push(div.getRight(), mv, variables, toType(expression, variables));
       final var type = toType(div, variables);
       if (type == Type.INT_TYPE) {
         mv.visitInsn(IDIV);
@@ -106,8 +126,8 @@ public class TypeHelper {
       }
     } else if (expression instanceof AdditionExpression) {
       final var add = (AdditionExpression) expression;
-      push(add.getLeft(), mv, variables);
-      push(add.getRight(), mv, variables);
+      push(add.getLeft(), mv, variables, toType(expression, variables));
+      push(add.getRight(), mv, variables, toType(expression, variables));
       final var type = toType(add, variables);
       if (type == Type.INT_TYPE) {
         mv.visitInsn(IADD);
@@ -136,8 +156,8 @@ public class TypeHelper {
       }
     } else if (expression instanceof SubtractionExpression) {
       final var div = (SubtractionExpression) expression;
-      push(div.getLeft(), mv, variables);
-      push(div.getRight(), mv, variables);
+      push(div.getLeft(), mv, variables, toType(expression, variables));
+      push(div.getRight(), mv, variables, toType(expression, variables));
       final var type = toType(div, variables);
       if (type == Type.INT_TYPE) {
         mv.visitInsn(ISUB);

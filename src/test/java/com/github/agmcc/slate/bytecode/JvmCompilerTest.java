@@ -161,6 +161,22 @@ class JvmCompilerTest {
   }
 
   @Test
+  void testCompile_varDeclaration_addition_mixedTypes() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "result", new AdditionExpression(new IntLit("1"), new DecLit("3.5")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
   void testCompile_varDeclaration_addition_string() {
     // Given
     final var compilationUnit =
@@ -194,6 +210,22 @@ class JvmCompilerTest {
   }
 
   @Test
+  void testCompile_varDeclaration_subtraction_mixedTypes() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "result", new SubtractionExpression(new IntLit("10"), new DecLit("3")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
   void testCompile_varDeclaration_multiplication() {
     // Given
     final var compilationUnit =
@@ -201,6 +233,23 @@ class JvmCompilerTest {
             List.of(
                 new VarDeclaration(
                     "result", new MultiplicationExpression(new IntLit("10"), new IntLit("2")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_varDeclaration_multiplication_mixedTypes() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "result",
+                    new MultiplicationExpression(new DecLit("10.0101"), new IntLit("2")))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -225,6 +274,22 @@ class JvmCompilerTest {
     assertNotNull(actual);
   }
 
+  @Test
+  void testCompile_varDeclaration_division_mixedTypes() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "result", new DivisionExpression(new IntLit("10"), new DecLit("0.5")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
   /* Assignment */
 
   // TODO: Assignment null expression
@@ -236,6 +301,22 @@ class JvmCompilerTest {
         new CompilationUnit(
             List.of(
                 new VarDeclaration("value", new IntLit("0")),
+                new Assignment("value", new IntLit("1"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_assignment_int_convertType() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("value", new DecLit("1.5")),
                 new Assignment("value", new IntLit("1"))));
 
     // When
@@ -289,7 +370,7 @@ class JvmCompilerTest {
   }
 
   @Test
-  void testCompile_assignment_int_invalidType() {
+  void testCompile_assignment_invalidConversion() {
     // Given
     final var compilationUnit =
         new CompilationUnit(
@@ -298,8 +379,12 @@ class JvmCompilerTest {
                 new Assignment("value", new IntLit("1"))));
 
     // When Then
-    assertThrows(
-        IllegalArgumentException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
+    final var e =
+        assertThrows(
+            UnsupportedOperationException.class,
+            () -> compiler.compile(compilationUnit, CLASS_NAME));
+
+    assertEquals("Unable to convert type I to java/lang/String", e.getMessage());
   }
 
   /* Print */
