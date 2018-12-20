@@ -3,8 +3,6 @@ package com.github.agmcc.slate.bytecode;
 import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
-import static org.objectweb.asm.Opcodes.ASTORE;
-import static org.objectweb.asm.Opcodes.DSTORE;
 import static org.objectweb.asm.Opcodes.GETSTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.ISTORE;
@@ -18,6 +16,7 @@ import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -52,19 +51,17 @@ public class JvmCompiler {
     mv.visitLabel(methodStart);
 
     // Variables
-    final var variables = new HashMap<String, Variable>();
+    final var varMap = new HashMap<String, Variable>();
 
     mv.visitLabel(methodEnd);
-
-    final var typeHelper = new TypeHelper();
 
     compilationUnit.specificProcess(
         VarDeclaration.class,
         v -> {
-          final var varType = typeHelper.toType(v.getValue(), variables);
+          final var varType = Optional.ofNullable(v.getValue()).orElseThrow().getType(varMap);
           final var index = localVarCount.incrementAndGet();
 
-          variables.put(v.getVarName(), new Variable(varType, index));
+          varMap.put(v.getVarName(), new Variable(varType, index));
 
           mv.visitLocalVariable(
               v.getVarName(), varType.getDescriptor(), null, methodStart, methodEnd, index);
@@ -76,39 +73,17 @@ public class JvmCompiler {
         .forEach(
             s -> {
               if (s instanceof VarDeclaration) {
-                final var variable = variables.get(((VarDeclaration) s).getVarName());
-                final var type = variable.getType();
-                final var index = variable.getIndex();
+                final var variable = varMap.get(((VarDeclaration) s).getVarName());
 
-                typeHelper.push(((VarDeclaration) s).getValue(), mv, variables, type);
+                ((VarDeclaration) s).getValue().pushAs(mv, varMap, variable.getType());
 
-                if (type == Type.INT_TYPE) {
-                  mv.visitVarInsn(ISTORE, index);
-                } else if (type == Type.DOUBLE_TYPE) {
-                  mv.visitVarInsn(DSTORE, index);
-                } else if (type.equals(Type.getType(String.class))) {
-                  mv.visitVarInsn(ASTORE, index);
-                } else {
-                  throw new UnsupportedOperationException(
-                      "Unsupported variable declaration: " + s.getClass().getCanonicalName());
-                }
+                mv.visitVarInsn(variable.getType().getOpcode(ISTORE), variable.getIndex());
               } else if (s instanceof Assignment) {
-                final var variable = variables.get(((Assignment) s).getVarName());
-                final var type = variable.getType();
-                final var index = variable.getIndex();
+                final var variable = varMap.get(((Assignment) s).getVarName());
 
-                typeHelper.push(((Assignment) s).getValue(), mv, variables, type);
+                ((Assignment) s).getValue().pushAs(mv, varMap, variable.getType());
 
-                if (type == Type.INT_TYPE) {
-                  mv.visitVarInsn(ISTORE, index);
-                } else if (type == Type.DOUBLE_TYPE) {
-                  mv.visitVarInsn(DSTORE, index);
-                } else if (type.equals(Type.getType(String.class))) {
-                  mv.visitVarInsn(ASTORE, index);
-                } else {
-                  throw new UnsupportedOperationException(
-                      "Unsupported assignment declaration: " + s.getClass().getCanonicalName());
-                }
+                mv.visitVarInsn(variable.getType().getOpcode(ISTORE), variable.getIndex());
               } else if (s instanceof Print) {
                 mv.visitFieldInsn(
                     GETSTATIC,
@@ -116,19 +91,16 @@ public class JvmCompiler {
                     "out",
                     Type.getDescriptor(PrintStream.class));
 
-                final var printValue = ((Print) s).getValue();
+                final var value = ((Print) s).getValue();
 
-                typeHelper.push(printValue, mv, variables);
-
-                final var valueType = typeHelper.toType(printValue, variables);
+                value.push(mv, varMap);
 
                 mv.visitMethodInsn(
                     INVOKEVIRTUAL,
                     Type.getInternalName(PrintStream.class),
                     "println",
-                    Type.getMethodDescriptor(Type.VOID_TYPE, valueType),
+                    Type.getMethodDescriptor(Type.VOID_TYPE, value.getType(varMap)),
                     false);
-
               } else {
                 throw new UnsupportedOperationException(
                     "Unsupported statement: " + s.getClass().getCanonicalName());

@@ -17,6 +17,7 @@ import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,12 +42,7 @@ class JvmCompilerTest {
     final var compilationUnit = new CompilationUnit(List.of(new VarDeclaration("count", null)));
 
     // When Then
-    final var e =
-        assertThrows(
-            UnsupportedOperationException.class,
-            () -> compiler.compile(compilationUnit, CLASS_NAME));
-
-    assertEquals("Unsupported type: null", e.getMessage());
+    assertThrows(NoSuchElementException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
   }
 
   @ParameterizedTest
