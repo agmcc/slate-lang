@@ -3,17 +3,11 @@ package com.github.agmcc.slate.bytecode;
 import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
-import static org.objectweb.asm.Opcodes.GETSTATIC;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.ISTORE;
 import static org.objectweb.asm.Opcodes.RETURN;
 import static org.objectweb.asm.Opcodes.V1_6;
 
 import com.github.agmcc.slate.ast.CompilationUnit;
-import com.github.agmcc.slate.ast.statement.Assignment;
-import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Optional;
@@ -55,6 +49,7 @@ public class JvmCompiler {
 
     mv.visitLabel(methodEnd);
 
+    // TODO: Variables are currently global scope for compilation (scope checks done earlier)
     compilationUnit.specificProcess(
         VarDeclaration.class,
         v -> {
@@ -68,44 +63,7 @@ public class JvmCompiler {
         });
 
     // Statements
-    compilationUnit
-        .getStatements()
-        .forEach(
-            s -> {
-              if (s instanceof VarDeclaration) {
-                final var variable = varMap.get(((VarDeclaration) s).getVarName());
-
-                ((VarDeclaration) s).getValue().pushAs(mv, varMap, variable.getType());
-
-                mv.visitVarInsn(variable.getType().getOpcode(ISTORE), variable.getIndex());
-              } else if (s instanceof Assignment) {
-                final var variable = varMap.get(((Assignment) s).getVarName());
-
-                ((Assignment) s).getValue().pushAs(mv, varMap, variable.getType());
-
-                mv.visitVarInsn(variable.getType().getOpcode(ISTORE), variable.getIndex());
-              } else if (s instanceof Print) {
-                mv.visitFieldInsn(
-                    GETSTATIC,
-                    Type.getInternalName(System.class),
-                    "out",
-                    Type.getDescriptor(PrintStream.class));
-
-                final var value = ((Print) s).getValue();
-
-                value.push(mv, varMap);
-
-                mv.visitMethodInsn(
-                    INVOKEVIRTUAL,
-                    Type.getInternalName(PrintStream.class),
-                    "println",
-                    Type.getMethodDescriptor(Type.VOID_TYPE, value.getType(varMap)),
-                    false);
-              } else {
-                throw new UnsupportedOperationException(
-                    "Unsupported statement: " + s.getClass().getCanonicalName());
-              }
-            });
+    compilationUnit.getStatements().forEach(s -> s.generate(mv, varMap));
 
     mv.visitInsn(RETURN);
     mv.visitMaxs(100, 100); // TODO: Use proper values

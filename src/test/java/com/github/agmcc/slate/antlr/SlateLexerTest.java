@@ -1,19 +1,6 @@
 package com.github.agmcc.slate.antlr;
 
-import static com.github.agmcc.slate.antlr.SlateLexer.ADD;
-import static com.github.agmcc.slate.antlr.SlateLexer.ASSIGN;
-import static com.github.agmcc.slate.antlr.SlateLexer.DEC_LIT;
-import static com.github.agmcc.slate.antlr.SlateLexer.DIV;
-import static com.github.agmcc.slate.antlr.SlateLexer.HIDDEN;
-import static com.github.agmcc.slate.antlr.SlateLexer.ID;
-import static com.github.agmcc.slate.antlr.SlateLexer.INT_LIT;
-import static com.github.agmcc.slate.antlr.SlateLexer.L_PAREN;
-import static com.github.agmcc.slate.antlr.SlateLexer.MUL;
-import static com.github.agmcc.slate.antlr.SlateLexer.R_PAREN;
-import static com.github.agmcc.slate.antlr.SlateLexer.STRING_LIT;
-import static com.github.agmcc.slate.antlr.SlateLexer.SUB;
-import static com.github.agmcc.slate.antlr.SlateLexer.VAR;
-import static com.github.agmcc.slate.antlr.SlateLexer.WS;
+import static com.github.agmcc.slate.antlr.SlateLexer.*;
 import static com.github.agmcc.slate.test.ANTLRUtils.getTokenTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -172,5 +159,17 @@ class SlateLexerTest {
 
     // Assert
     assertEquals(List.of(ID), actual);
+  }
+
+  @Test
+  void testBraces() {
+    // Given
+    final var src = "{}";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(L_BRACE, R_BRACE), actual);
   }
 }

@@ -20,6 +20,8 @@ DIV: '/';
 ASSIGN: '=';
 L_PAREN: '(';
 R_PAREN: ')';
+L_BRACE: '{';
+R_BRACE: '}';
 
 // Identifiers
 ID: [_]*[a-z][A-Za-z0-9_]*;

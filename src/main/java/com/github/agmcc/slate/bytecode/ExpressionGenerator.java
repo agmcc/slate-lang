@@ -1,12 +1,11 @@
-package com.github.agmcc.slate.ast;
+package com.github.agmcc.slate.bytecode;
 
-import com.github.agmcc.slate.bytecode.Variable;
 import java.util.Map;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-public interface BytecodeGenerator extends Opcodes {
+public interface ExpressionGenerator extends Opcodes {
 
   Type getType(Map<String, Variable> varMap);
 

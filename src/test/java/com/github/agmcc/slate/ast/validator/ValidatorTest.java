@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.Point;
 import com.github.agmcc.slate.ast.Position;
+import com.github.agmcc.slate.ast.expression.IntLit;
 import com.github.agmcc.slate.ast.expression.StringLit;
 import com.github.agmcc.slate.ast.expression.VarReference;
 import com.github.agmcc.slate.ast.statement.Assignment;
+import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -70,6 +73,113 @@ class ValidatorTest {
 
     final var expected =
         List.of(new Error("No variable named 'message' at [1,0]", new Point(1, 0)));
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_assignment_blockValid() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("outer", new IntLit("5"), Position.of(1, 1, 1, 15)),
+                new Block(
+                    List.of(new Assignment("outer", new IntLit("10"), Position.of(3, 4, 3, 10))))));
+
+    final var expected = Collections.emptyList();
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_assignment_blockInvalid() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Block(
+                    List.of(
+                        new VarDeclaration("inner", new IntLit("5"), Position.of(2, 4, 2, 10)))),
+                new Assignment("inner", new IntLit("10"), Position.of(4, 1, 4, 15))));
+
+    final var expected = List.of(new Error("No variable named 'inner' at [4,1]", new Point(4, 1)));
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_varDeclaration_nestedBlocksValid() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Block(
+                    List.of(
+                        new Block(
+                            List.of(
+                                new VarDeclaration(
+                                    "inner", new IntLit("5"), Position.of(2, 4, 2, 10))))))));
+
+    final var expected = Collections.emptyList();
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_print_nestedBlocksValid() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("x", new IntLit("1")),
+                new Block(
+                    List.of(
+                        new VarDeclaration("y", new IntLit("2")),
+                        new Block(
+                            List.of(
+                                new VarDeclaration("z", new IntLit("3")),
+                                new Print(new VarReference("x")),
+                                new Print(new VarReference("y")),
+                                new Print(new VarReference("z"))))))));
+
+    final var expected = Collections.emptyList();
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_print_nestedBlocksInvalid() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Block(
+                    List.of(
+                        new Print(new VarReference("x", Position.of(2, 4, 2, 10))),
+                        new Block(List.of(new VarDeclaration("x", new IntLit("1"))))))));
+
+    final var expected = List.of(new Error("No variable named 'x' at [2,4]", new Point(2, 4)));
 
     // When
     final var actual = validator.validate(compilationUnit);

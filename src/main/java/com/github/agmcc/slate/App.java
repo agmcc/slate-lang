@@ -46,6 +46,7 @@ public class App {
 
     if (!errors.isEmpty()) {
       errors.forEach(e -> System.err.println(e.getMessage()));
+      System.exit(-1);
     }
 
     // Compiler

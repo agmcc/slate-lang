@@ -2,6 +2,7 @@ package com.github.agmcc.slate.ast.mapper;
 
 import com.github.agmcc.slate.antlr.SlateParser.AssignmentStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.BinaryOperationContext;
+import com.github.agmcc.slate.antlr.SlateParser.BlockStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.CompilationUnitContext;
 import com.github.agmcc.slate.antlr.SlateParser.DecimalLiteralContext;
 import com.github.agmcc.slate.antlr.SlateParser.ExpressionContext;
@@ -24,10 +25,7 @@ import com.github.agmcc.slate.ast.expression.binary.BinaryExpression;
 import com.github.agmcc.slate.ast.expression.binary.DivisionExpression;
 import com.github.agmcc.slate.ast.expression.binary.MultiplicationExpression;
 import com.github.agmcc.slate.ast.expression.binary.SubtractionExpression;
-import com.github.agmcc.slate.ast.statement.Assignment;
-import com.github.agmcc.slate.ast.statement.Print;
-import com.github.agmcc.slate.ast.statement.Statement;
-import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import com.github.agmcc.slate.ast.statement.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -67,6 +65,10 @@ public class ParseTreeMapperImpl
           assignmentCtx.ID().getText(), toAst(assignmentCtx.expression()), toPosition(ctx));
     } else if (ctx instanceof PrintStatementContext) {
       return new Print(toAst(((PrintStatementContext) ctx).print().expression()), toPosition(ctx));
+    } else if (ctx instanceof BlockStatementContext) {
+      final var statements = ((BlockStatementContext) ctx).block().statement();
+      return new Block(
+          statements.stream().map(this::toAst).collect(Collectors.toList()), toPosition(ctx));
     } else {
       throw new UnsupportedOperationException(getErrorMsg(ctx));
     }

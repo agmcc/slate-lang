@@ -6,13 +6,16 @@ compilationUnit: statement* EOF;
 
 statement: varDeclaration # varDeclarationStatement
          | assignment # assignmentStatement
-         | print # printStatement;
+         | print # printStatement
+         | block # blockStatement;
 
 print: PRINT expression;
 
 varDeclaration: VAR assignment;
 
 assignment: ID ASSIGN expression;
+
+block: L_BRACE statement* R_BRACE;
 
 expression : left=expression operator=(DIV|MUL) right=expression # binaryOperation
            | left=expression operator=(ADD|SUB) right=expression # binaryOperation

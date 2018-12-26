@@ -62,6 +62,8 @@ class SlateParserTest {
     JSONAssert.assertEquals(expected, actual, true);
   }
 
+  // TODO: Block tests
+
   private String loadJsonFromYml(String resource) {
     return SerializationUtils.yamlToJson(FileUtils.readResourceAsString(resource));
   }
