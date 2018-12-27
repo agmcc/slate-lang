@@ -1,0 +1,43 @@
+---
+class: CompilationUnitContext
+children:
+  - class: BlockStatementContext
+    children:
+      - class: BlockContext
+        children:
+          - class: TerminalNodeImpl
+            text: '{'
+          # Statement 1
+          - class: VarDeclarationStatementContext
+            children:
+              - class: VarDeclarationContext
+                children:
+                  - class: TerminalNodeImpl
+                    text: var
+                  - class: AssignmentContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: a
+                      - class: TerminalNodeImpl
+                        text: =
+                      - class: IntLiteralContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: '1'
+          # Statement 2
+          - class: AssignmentStatementContext
+            children:
+              - class: AssignmentContext
+                children:
+                  - class: TerminalNodeImpl
+                    text: a
+                  - class: TerminalNodeImpl
+                    text: =
+                  - class: IntLiteralContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: '2'
+          - class: TerminalNodeImpl
+            text: '}'
+  - class: TerminalNodeImpl
+    text: <EOF>

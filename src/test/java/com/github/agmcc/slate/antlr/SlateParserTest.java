@@ -62,7 +62,44 @@ class SlateParserTest {
     JSONAssert.assertEquals(expected, actual, true);
   }
 
-  // TODO: Block tests
+  @Test
+  void testBlock() throws JSONException {
+    // Given
+    final var src = "{ print x }";
+    final var expected = loadJsonFromYml("Block.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
+
+  @Test
+  void testBlock_empty() throws JSONException {
+    // Given
+    final var src = "{}";
+    final var expected = loadJsonFromYml("Block_empty.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
+
+  @Test
+  void testBlock_multipleStatements() throws JSONException {
+    // Given
+    final var src = "{ var a = 1 a = 2}";
+    final var expected = loadJsonFromYml("Block_multi.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
 
   private String loadJsonFromYml(String resource) {
     return SerializationUtils.yamlToJson(FileUtils.readResourceAsString(resource));

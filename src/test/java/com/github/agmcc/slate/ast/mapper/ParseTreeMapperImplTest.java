@@ -21,6 +21,7 @@ import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import com.github.agmcc.slate.test.ANTLRUtils;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -221,29 +222,6 @@ class ParseTreeMapperImplTest {
   }
 
   @Test
-  void testToAst_positions() {
-    // Given
-    final var src = "var price = 9.95";
-
-    final var expected =
-        new CompilationUnit(
-            List.of(
-                new VarDeclaration(
-                    "price",
-                    new DecLit("9.95", Position.of(1, 12, 1, 16)),
-                    Position.of(1, 0, 1, 16))),
-            Position.of(1, 0, 1, 16));
-
-    final var positionMapper = new ParseTreeMapperImpl(true);
-
-    // When
-    final var actual = positionMapper.toAst(ANTLRUtils.parseString(src));
-
-    // Then
-    assertEquals(expected, actual);
-  }
-
-  @Test
   void testToAst_block() {
     // Given
     final var src = "{ var price = 9.95 }";
@@ -259,6 +237,63 @@ class ParseTreeMapperImplTest {
                             Position.of(1, 2, 1, 18))),
                     Position.of(1, 0, 1, 20))),
             Position.of(1, 0, 1, 20));
+
+    final var positionMapper = new ParseTreeMapperImpl(true);
+
+    // When
+    final var actual = positionMapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_block_emptyBody() {
+    // Given
+    final var src = "{}";
+
+    final var expected = new CompilationUnit(List.of(new Block(Collections.emptyList())));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_block_multiStatement() {
+    // Given
+    final var src = "{ a = 1 a = 2 }";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new Block(
+                    List.of(
+                        new Assignment("a", new IntLit("1")),
+                        new Assignment("a", new IntLit("2"))))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_positions() {
+    // Given
+    final var src = "var price = 9.95";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "price",
+                    new DecLit("9.95", Position.of(1, 12, 1, 16)),
+                    Position.of(1, 0, 1, 16))),
+            Position.of(1, 0, 1, 16));
 
     final var positionMapper = new ParseTreeMapperImpl(true);
 

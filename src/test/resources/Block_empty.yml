@@ -1,0 +1,13 @@
+---
+class: CompilationUnitContext
+children:
+  - class: BlockStatementContext
+    children:
+      - class: BlockContext
+        children:
+          - class: TerminalNodeImpl
+            text: '{'
+          - class: TerminalNodeImpl
+            text: '}'
+  - class: TerminalNodeImpl
+    text: <EOF>

@@ -1,0 +1,23 @@
+---
+class: CompilationUnitContext
+children:
+  - class: BlockStatementContext
+    children:
+      - class: BlockContext
+        children:
+          - class: TerminalNodeImpl
+            text: '{'
+          - class: PrintStatementContext
+            children:
+              - class: PrintContext
+                children:
+                  - class: TerminalNodeImpl
+                    text: print
+                  - class: VarReferenceContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: x
+          - class: TerminalNodeImpl
+            text: '}'
+  - class: TerminalNodeImpl
+    text: <EOF>

@@ -14,6 +14,7 @@ import com.github.agmcc.slate.ast.expression.binary.DivisionExpression;
 import com.github.agmcc.slate.ast.expression.binary.MultiplicationExpression;
 import com.github.agmcc.slate.ast.expression.binary.SubtractionExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
+import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import java.util.List;
@@ -46,7 +47,7 @@ class JvmCompilerTest {
   }
 
   @ParameterizedTest
-  // TODO: Underscores
+  // TODO: Underscoresw
   @ValueSource(strings = {"5", "-5", "0146", "0X123Face", "0x123", "0b1111", "0B1111"})
   void testCompile_varDeclaration_int_valid(String value) {
     // Given
@@ -391,6 +392,25 @@ class JvmCompilerTest {
   void testCompile_print_int_valid() {
     // Given
     final var compilationUnit = new CompilationUnit(List.of(new Print(new IntLit("10"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  /* Block */
+
+  @Test
+  void testCompile_block() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("outer", new IntLit("3")),
+                new Block(List.of(new VarDeclaration("inner1", new IntLit("5")))),
+                new Block(List.of(new VarDeclaration("inner2", new DecLit("2.5"))))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
