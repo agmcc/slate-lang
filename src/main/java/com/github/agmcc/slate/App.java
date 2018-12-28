@@ -8,6 +8,7 @@ import com.github.agmcc.slate.bytecode.JvmCompiler;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
@@ -45,20 +46,24 @@ public class App {
     final var errors = validator.validate(compilationUnit);
 
     if (!errors.isEmpty()) {
-      errors.forEach(e -> System.err.println(e.getMessage()));
-      System.exit(-1);
+      throw new ValidationException(errors);
     }
 
     // Compiler
     final var compiler = new JvmCompiler();
 
-    final var className = source.substring(0, source.lastIndexOf("."));
+    final var sourcePath = Paths.get(source);
+    final var segments = sourcePath.getNameCount();
+
+    var className = sourcePath.subpath(segments - 1, segments).toString();
+    className = className.substring(0, className.lastIndexOf("."));
 
     final var bytes = compiler.compile(compilationUnit, className);
 
     // Write file
     try (final var os =
-        new BufferedOutputStream(new FileOutputStream(className.concat(CLASS_EXTENSION)))) {
+        new BufferedOutputStream(
+            new FileOutputStream(source.replace(SOURCE_EXTENSION, CLASS_EXTENSION)))) {
       os.write(bytes);
     }
   }

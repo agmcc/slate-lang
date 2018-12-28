@@ -5,6 +5,7 @@ plugins {
     id 'idea'
     id 'eclipse'
     id 'com.github.onslip.gradle-one-jar' version '1.0.5'
+    id 'org.unbroken-dome.test-sets' version '2.0.3'
 }
 
 repositories {
@@ -26,6 +27,9 @@ dependencies {
     runtime 'org.ow2.asm:asm:7.0'
     runtime 'org.ow2.asm:asm-util:7.0'
 
+    testCompileOnly 'org.projectlombok:lombok:1.18.4'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.3.1'
 
@@ -44,7 +48,7 @@ generateGrammarSource {
     outputDirectory = new File("$buildDir/generated-src/antlr/main/com/github/agmcc/slate/antlr")
 }
 
-test {
+tasks.withType(Test) {
     useJUnitPlatform()
     testLogging {
         events 'failed', 'standard_error'
@@ -65,3 +69,10 @@ task fatJar(type: OneJar) {
 }
 
 assemble.dependsOn fatJar
+
+testSets {
+    integrationTest
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter(test)

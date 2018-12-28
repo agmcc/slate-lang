@@ -1,0 +1,4 @@
+{
+  var inner = 2.5
+}
+print inner
