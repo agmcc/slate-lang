@@ -94,7 +94,7 @@ class SlateIT {
     // Given
     final var src = getResourcePath("/Operators.slate").toString();
 
-    final var expected = "4\n4.5\n2\n1.5\n90\n66.5\n12\n12.5\n46\n";
+    final var expected = "4\n4.5\n2\n1.5\n90\n66.5\n12\n12.5\n46\n1000000\n";
 
     // When
     App.main(src);

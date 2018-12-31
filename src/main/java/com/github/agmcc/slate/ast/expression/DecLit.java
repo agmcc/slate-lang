@@ -38,6 +38,11 @@ public class DecLit implements Expression {
 
   @Override
   public void push(MethodVisitor mv, Map<String, Variable> varMap) {
-    mv.visitLdcInsn(Double.parseDouble(value));
+    mv.visitLdcInsn(parseDouble(value));
+  }
+
+  private double parseDouble(String v) {
+    final var stripped = v.replaceAll("_", "");
+    return Double.parseDouble(stripped);
   }
 }

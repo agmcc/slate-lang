@@ -24,3 +24,6 @@ print divCast
 
 var complex = 1 + (50 - 40) / 2 * 9
 print complex
+
+var underscores = 1_000_000
+print underscores

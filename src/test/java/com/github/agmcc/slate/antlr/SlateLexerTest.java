@@ -1,6 +1,33 @@
 package com.github.agmcc.slate.antlr;
 
-import static com.github.agmcc.slate.antlr.SlateLexer.*;
+import static com.github.agmcc.slate.antlr.SlateLexer.ADD;
+import static com.github.agmcc.slate.antlr.SlateLexer.AND;
+import static com.github.agmcc.slate.antlr.SlateLexer.ASSIGN;
+import static com.github.agmcc.slate.antlr.SlateLexer.DEC_LIT;
+import static com.github.agmcc.slate.antlr.SlateLexer.DIV;
+import static com.github.agmcc.slate.antlr.SlateLexer.ELSE;
+import static com.github.agmcc.slate.antlr.SlateLexer.EQUAL;
+import static com.github.agmcc.slate.antlr.SlateLexer.FALSE_LIT;
+import static com.github.agmcc.slate.antlr.SlateLexer.GREATER;
+import static com.github.agmcc.slate.antlr.SlateLexer.GREATER_EQ;
+import static com.github.agmcc.slate.antlr.SlateLexer.HIDDEN;
+import static com.github.agmcc.slate.antlr.SlateLexer.ID;
+import static com.github.agmcc.slate.antlr.SlateLexer.IF;
+import static com.github.agmcc.slate.antlr.SlateLexer.INT_LIT;
+import static com.github.agmcc.slate.antlr.SlateLexer.LESS;
+import static com.github.agmcc.slate.antlr.SlateLexer.LESS_EQ;
+import static com.github.agmcc.slate.antlr.SlateLexer.L_BRACE;
+import static com.github.agmcc.slate.antlr.SlateLexer.L_PAREN;
+import static com.github.agmcc.slate.antlr.SlateLexer.MUL;
+import static com.github.agmcc.slate.antlr.SlateLexer.NOT_EQUAL;
+import static com.github.agmcc.slate.antlr.SlateLexer.OR;
+import static com.github.agmcc.slate.antlr.SlateLexer.R_BRACE;
+import static com.github.agmcc.slate.antlr.SlateLexer.R_PAREN;
+import static com.github.agmcc.slate.antlr.SlateLexer.STRING_LIT;
+import static com.github.agmcc.slate.antlr.SlateLexer.SUB;
+import static com.github.agmcc.slate.antlr.SlateLexer.TRUE_LIT;
+import static com.github.agmcc.slate.antlr.SlateLexer.VAR;
+import static com.github.agmcc.slate.antlr.SlateLexer.WS;
 import static com.github.agmcc.slate.test.ANTLRUtils.getTokenTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -9,6 +36,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SlateLexerTest {
 
@@ -48,24 +76,20 @@ class SlateLexerTest {
     assertEquals(List.of(VAR), actual);
   }
 
-  @Test
-  void testIntLiteral() {
-    // Given
-    final var src = "1";
-
-    // When
+  @ParameterizedTest
+  @ValueSource(strings = {"1", "0", "1_000", "1_000_000"})
+  void testIntLiterals(String src) {
+    // Given // When
     final var actual = getTokenTypes(src);
 
     // Then
     assertEquals(List.of(INT_LIT), actual);
   }
 
-  @Test
-  void testDecimalLiteral() {
-    // Given
-    final var src = "1.0";
-
-    // When
+  @ParameterizedTest
+  @ValueSource(strings = {"1.0", "0.0", "1_000.00", "1000.00_00"})
+  void testDecimalLiteral(String src) {
+    // Given // When
     final var actual = getTokenTypes(src);
 
     // Then

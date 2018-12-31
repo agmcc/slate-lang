@@ -52,8 +52,7 @@ class JvmCompilerTest {
   }
 
   @ParameterizedTest
-  // TODO: Underscoresw
-  @ValueSource(strings = {"5", "-5", "0146", "0X123Face", "0x123", "0b1111", "0B1111"})
+  @ValueSource(strings = {"5", "-5", "0146", "0X123Face", "0x123", "0b1111", "0B1111", "1_000_000"})
   void testCompile_varDeclaration_int_valid(String value) {
     // Given
     final var compilationUnit =
@@ -88,7 +87,20 @@ class JvmCompilerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"5", "-5", "5.0", "-5.0", "5.5", "5f", "-5f", "5.0f", "-5.0f"})
+  @ValueSource(
+      strings = {
+        "5",
+        "-5",
+        "5.0",
+        "-5.0",
+        "5.5",
+        "5f",
+        "-5f",
+        "5.0f",
+        "-5.0f",
+        "1_000.00",
+        "100.00_00"
+      })
   void testCompile_varDeclaration_decimal_valid(String value) {
     // Given
     final var compilationUnit =

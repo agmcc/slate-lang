@@ -10,8 +10,8 @@ IF: 'if';
 ELSE: 'else';
 
 // Literals
-DEC_LIT: '0'|[1-9][0-9]*'.'[0-9]+;
-INT_LIT: '0'|[1-9][0-9]*;
+INT_LIT: '0' | [1-9] (Digits? | '_'+ Digits);
+DEC_LIT: Digits '.' Digits? | '.' Digits;
 STRING_LIT: '\''~('\r'|'\n'|'\'')*'\'';
 TRUE_LIT: 'true';
 FALSE_LIT: 'false';
@@ -37,3 +37,5 @@ R_BRACE: '}';
 
 // Identifiers
 ID: [_]*[a-z][A-Za-z0-9_]*;
+
+fragment Digits: [0-9] ([0-9_]* [0-9])?;

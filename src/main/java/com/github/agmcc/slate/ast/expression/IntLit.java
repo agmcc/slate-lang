@@ -42,8 +42,9 @@ public class IntLit implements Expression {
   }
 
   private int parseInt(String v) {
-    return v.toLowerCase().startsWith("0b")
-        ? Integer.parseInt(v.substring(2), 2)
-        : Integer.decode(v);
+    final var stripped = v.replaceAll("_", "");
+    return stripped.toLowerCase().startsWith("0b")
+        ? Integer.parseInt(stripped.substring(2), 2)
+        : Integer.decode(stripped);
   }
 }
