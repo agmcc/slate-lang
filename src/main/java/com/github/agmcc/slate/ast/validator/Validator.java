@@ -1,9 +1,12 @@
 package com.github.agmcc.slate.ast.validator;
 
 import com.github.agmcc.slate.ast.CompilationUnit;
+import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.VarReference;
+import com.github.agmcc.slate.ast.expression.binary.logic.LogicExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
+import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Statement;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import java.util.ArrayList;
@@ -14,6 +17,9 @@ public class Validator {
   private static final String DUPLICATE_VAR_ERROR_TEMPLATE = "Variable '%s' already declared at %s";
 
   private static final String MISSING_VAR_ERROR_TEMPLATE = "No variable named '%s' at %s";
+
+  private static final String INVALID_CONDITION_ERROR_TEMPLATE =
+      "Condition must be a boolean expression at %s";
 
   public List<Error> validate(CompilationUnit compilationUnit) {
     return new ArrayList<>(validateScope(compilationUnit.getStatements(), null));
@@ -72,6 +78,38 @@ public class Validator {
                       String.format(
                           MISSING_VAR_ERROR_TEMPLATE, varName, a.getPosition().getStart()),
                       a.getPosition().getStart()));
+            }
+          });
+
+      s.specificProcess(
+          Condition.class,
+          c -> {
+            final var expression = c.getExpression();
+
+            if (expression instanceof VarReference) {
+              final var variable =
+                  currentScope.resolve().get(((VarReference) expression).getText());
+
+              if (variable == null) {
+                return;
+              }
+
+              final var value = variable.getValue();
+
+              if (!(value instanceof BooleanLit || value instanceof LogicExpression)) {
+                errors.add(
+                    new Error(
+                        String.format(
+                            INVALID_CONDITION_ERROR_TEMPLATE, expression.getPosition().getStart()),
+                        expression.getPosition().getStart()));
+              }
+            } else if (!(expression instanceof BooleanLit
+                || expression instanceof LogicExpression)) {
+              errors.add(
+                  new Error(
+                      String.format(
+                          INVALID_CONDITION_ERROR_TEMPLATE, expression.getPosition().getStart()),
+                      expression.getPosition().getStart()));
             }
           });
     }

@@ -1,0 +1,29 @@
+if true || true
+  print 'true'
+else
+  print 'Error: Expected true'
+
+if true || false
+  print 'true'
+else
+  print 'Error: Expected true'
+
+if false || true
+  print 'true'
+else
+  print 'Error: Expected true'
+
+if false || false
+  print 'Error: Expected false'
+else
+  print 'false'
+
+if false || true || false
+  print 'true'
+else
+  print 'Error: Expected true'
+
+if 2 > 1 || 5 < 2
+  print 'true'
+else
+  print 'Error: Expected true'

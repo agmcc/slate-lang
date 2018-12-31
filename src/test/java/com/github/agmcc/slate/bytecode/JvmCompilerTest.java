@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.agmcc.slate.ast.CompilationUnit;
+import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
 import com.github.agmcc.slate.ast.expression.StringLit;
@@ -13,8 +14,12 @@ import com.github.agmcc.slate.ast.expression.binary.AdditionExpression;
 import com.github.agmcc.slate.ast.expression.binary.DivisionExpression;
 import com.github.agmcc.slate.ast.expression.binary.MultiplicationExpression;
 import com.github.agmcc.slate.ast.expression.binary.SubtractionExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.AndExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.GreaterExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.OrExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
+import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import java.util.List;
@@ -411,6 +416,136 @@ class JvmCompilerTest {
                 new VarDeclaration("outer", new IntLit("3")),
                 new Block(List.of(new VarDeclaration("inner1", new IntLit("5")))),
                 new Block(List.of(new VarDeclaration("inner2", new DecLit("2.5"))))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  /* Booleans */
+
+  @Test
+  void testCompile_boolean_true() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("true"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_boolean_false() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("false"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_boolean_invalid() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("invalid"))));
+
+    // When Then
+    final var e =
+        assertThrows(
+            UnsupportedOperationException.class,
+            () -> compiler.compile(compilationUnit, CLASS_NAME));
+
+    assertEquals("Invalid boolean value: invalid", e.getMessage());
+  }
+
+  @Test
+  void testCompile_varDeclaration_logicExpression() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "valid", new GreaterExpression(new IntLit("5"), new IntLit("3")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_logicalAnd_booleanLiterals() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new AndExpression(new BooleanLit("true"), new BooleanLit("true")),
+                    new Print(new StringLit("msg")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_logicalAnd_boolean_logical() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new AndExpression(
+                        new BooleanLit("true"),
+                        new GreaterExpression(new IntLit("5"), new IntLit("3"))),
+                    new Print(new StringLit("msg")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_logicalAnd_varRef() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("check", new BooleanLit("true")),
+                new Condition(
+                    new AndExpression(new BooleanLit("true"), new VarReference("check")),
+                    new Print(new StringLit("msg")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_logicalOr_boolean() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new OrExpression(new BooleanLit("true"), new BooleanLit("false")),
+                    new Print(new StringLit("msg")))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);

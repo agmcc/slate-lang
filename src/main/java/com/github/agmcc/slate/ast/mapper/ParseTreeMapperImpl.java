@@ -3,7 +3,9 @@ package com.github.agmcc.slate.ast.mapper;
 import com.github.agmcc.slate.antlr.SlateParser.AssignmentStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.BinaryOperationContext;
 import com.github.agmcc.slate.antlr.SlateParser.BlockStatementContext;
+import com.github.agmcc.slate.antlr.SlateParser.BooleanLiteralContext;
 import com.github.agmcc.slate.antlr.SlateParser.CompilationUnitContext;
+import com.github.agmcc.slate.antlr.SlateParser.ConditionStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.DecimalLiteralContext;
 import com.github.agmcc.slate.antlr.SlateParser.ExpressionContext;
 import com.github.agmcc.slate.antlr.SlateParser.IntLiteralContext;
@@ -15,6 +17,7 @@ import com.github.agmcc.slate.antlr.SlateParser.VarDeclarationStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.VarReferenceContext;
 import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.Position;
+import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.Expression;
 import com.github.agmcc.slate.ast.expression.IntLit;
@@ -25,7 +28,20 @@ import com.github.agmcc.slate.ast.expression.binary.BinaryExpression;
 import com.github.agmcc.slate.ast.expression.binary.DivisionExpression;
 import com.github.agmcc.slate.ast.expression.binary.MultiplicationExpression;
 import com.github.agmcc.slate.ast.expression.binary.SubtractionExpression;
-import com.github.agmcc.slate.ast.statement.*;
+import com.github.agmcc.slate.ast.expression.binary.logic.AndExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.EqualExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.GreaterEqualExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.GreaterExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.LessEqualExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.LessExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.NotEqualExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.OrExpression;
+import com.github.agmcc.slate.ast.statement.Assignment;
+import com.github.agmcc.slate.ast.statement.Block;
+import com.github.agmcc.slate.ast.statement.Condition;
+import com.github.agmcc.slate.ast.statement.Print;
+import com.github.agmcc.slate.ast.statement.Statement;
+import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -69,6 +85,13 @@ public class ParseTreeMapperImpl
       final var statements = ((BlockStatementContext) ctx).block().statement();
       return new Block(
           statements.stream().map(this::toAst).collect(Collectors.toList()), toPosition(ctx));
+    } else if (ctx instanceof ConditionStatementContext) {
+      final var condition = ((ConditionStatementContext) ctx).condition();
+      return new Condition(
+          toAst(condition.expression()),
+          toAst(condition.trueStatement),
+          condition.falseStatement != null ? toAst(condition.falseStatement) : null,
+          toPosition(ctx));
     } else {
       throw new UnsupportedOperationException(getErrorMsg(ctx));
     }
@@ -88,6 +111,8 @@ public class ParseTreeMapperImpl
       return new VarReference(ctx.getText(), toPosition(ctx));
     } else if (ctx instanceof ParenExpressionContext) {
       return toAst(((ParenExpressionContext) ctx).expression());
+    } else if (ctx instanceof BooleanLiteralContext) {
+      return new BooleanLit(ctx.getText(), toPosition(ctx));
     } else {
       throw new UnsupportedOperationException(getErrorMsg(ctx));
     }
@@ -103,6 +128,22 @@ public class ParseTreeMapperImpl
         return new MultiplicationExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
       case "/":
         return new DivisionExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case ">":
+        return new GreaterExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case ">=":
+        return new GreaterEqualExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case "==":
+        return new EqualExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case "!=":
+        return new NotEqualExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case "<":
+        return new LessExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case "<=":
+        return new LessEqualExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case "&&":
+        return new AndExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
+      case "||":
+        return new OrExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
       default:
         throw new UnsupportedOperationException(getErrorMsg(ctx));
     }

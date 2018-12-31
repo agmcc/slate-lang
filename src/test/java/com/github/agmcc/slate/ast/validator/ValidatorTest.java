@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.Point;
 import com.github.agmcc.slate.ast.Position;
+import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
 import com.github.agmcc.slate.ast.expression.StringLit;
 import com.github.agmcc.slate.ast.expression.VarReference;
+import com.github.agmcc.slate.ast.expression.binary.logic.GreaterExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
+import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import java.util.Collections;
@@ -180,6 +183,121 @@ class ValidatorTest {
                         new Block(List.of(new VarDeclaration("x", new IntLit("1"))))))));
 
     final var expected = List.of(new Error("No variable named 'x' at [2,4]", new Point(2, 4)));
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_condition() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new BooleanLit("true", Position.of(1, 3, 1, 7)),
+                    new Print(new StringLit("TRUE", Position.of(1, 8, 1, 13))),
+                    null,
+                    Position.of(1, 1, 1, 13))),
+            Position.of(1, 1, 1, 13));
+
+    final var expected = Collections.emptyList();
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_condition_invalidExpression() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new IntLit("1", Position.of(1, 3, 1, 4)),
+                    new Print(new StringLit("TRUE", Position.of(1, 8, 1, 13))),
+                    null,
+                    Position.of(1, 1, 1, 13))),
+            Position.of(1, 1, 1, 13));
+
+    final var expected =
+        List.of(new Error("Condition must be a boolean expression at [1,3]", new Point(1, 3)));
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_condition_varRef() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("check", new BooleanLit("true"), Position.of(1, 1, 1, 6)),
+                new Condition(
+                    new VarReference("check", Position.of(2, 3, 1, 4)),
+                    new Print(new StringLit("TRUE", Position.of(2, 8, 1, 13))),
+                    null,
+                    Position.of(2, 1, 1, 13))),
+            Position.of(1, 1, 2, 13));
+
+    final var expected = Collections.emptyList();
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_condition_invalidVarRef() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("check", new IntLit("1"), Position.of(1, 1, 1, 6)),
+                new Condition(
+                    new VarReference("check", Position.of(2, 3, 1, 4)),
+                    new Print(new StringLit("TRUE", Position.of(2, 8, 1, 13))),
+                    null,
+                    Position.of(2, 1, 1, 13))),
+            Position.of(1, 1, 2, 13));
+
+    final var expected =
+        List.of(new Error("Condition must be a boolean expression at [2,3]", new Point(2, 3)));
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_condition_logic() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new GreaterExpression(
+                        new IntLit("5"), new IntLit("3"), Position.of(2, 3, 1, 4)),
+                    new Print(new StringLit("TRUE", Position.of(2, 8, 1, 13))),
+                    null,
+                    Position.of(2, 1, 1, 13))),
+            Position.of(1, 1, 2, 13));
+
+    final var expected = Collections.emptyList();
 
     // When
     final var actual = validator.validate(compilationUnit);

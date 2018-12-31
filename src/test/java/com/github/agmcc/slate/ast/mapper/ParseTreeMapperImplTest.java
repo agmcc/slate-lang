@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.github.agmcc.slate.antlr.SlateParser.CompilationUnitContext;
 import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.Position;
+import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
 import com.github.agmcc.slate.ast.expression.StringLit;
@@ -16,8 +17,10 @@ import com.github.agmcc.slate.ast.expression.binary.AdditionExpression;
 import com.github.agmcc.slate.ast.expression.binary.DivisionExpression;
 import com.github.agmcc.slate.ast.expression.binary.MultiplicationExpression;
 import com.github.agmcc.slate.ast.expression.binary.SubtractionExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.GreaterExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
+import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import com.github.agmcc.slate.test.ANTLRUtils;
@@ -280,6 +283,86 @@ class ParseTreeMapperImplTest {
     // Then
     assertEquals(expected, actual);
   }
+
+  @Test
+  void testToAst_ifStatement() {
+    // Given
+    final var src = "if true a = 1";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(new Condition(new BooleanLit("true"), new Assignment("a", new IntLit("1")))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_ifStatement_block() {
+    // Given
+    final var src = "if true { a = 1 b = 2 }";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new BooleanLit("true"),
+                    new Block(
+                        List.of(
+                            new Assignment("a", new IntLit("1")),
+                            new Assignment("b", new IntLit("2")))))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_ifElseStatement() {
+    // Given
+    final var src = "if false a = 1 else a = 2";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new BooleanLit("false"),
+                    new Assignment("a", new IntLit("1")),
+                    new Assignment("a", new IntLit("2")),
+                    null)));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_ifStatement_greater() {
+    // Given
+    final var src = "if 5 > 3 a = 1";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new Condition(
+                    new GreaterExpression(new IntLit("5"), new IntLit("3")),
+                    new Assignment("a", new IntLit("1")))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  // TODO: More logical operator tests
 
   @Test
   void testToAst_positions() {

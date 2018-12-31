@@ -172,4 +172,138 @@ class SlateLexerTest {
     // Then
     assertEquals(List.of(L_BRACE, R_BRACE), actual);
   }
+
+  /* Logical operators */
+
+  @Test
+  void testLess() {
+    // Given
+    final var src = "<";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(LESS), actual);
+  }
+
+  @Test
+  void testLessEqual() {
+    // Given
+    final var src = "<=";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(LESS_EQ), actual);
+  }
+
+  @Test
+  void testGreater() {
+    // Given
+    final var src = ">";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(GREATER), actual);
+  }
+
+  @Test
+  void testGreaterEqual() {
+    // Given
+    final var src = ">=";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(GREATER_EQ), actual);
+  }
+
+  @Test
+  void testEqual() {
+    // Given
+    final var src = "==";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(EQUAL), actual);
+  }
+
+  @Test
+  void testNotEqual() {
+    // Given
+    final var src = "!=";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(NOT_EQUAL), actual);
+  }
+
+  @Test
+  void testAnd() {
+    // Given
+    final var src = "&&";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(AND), actual);
+  }
+
+  @Test
+  void testOr() {
+    // Given
+    final var src = "||";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(OR), actual);
+  }
+
+  @Test
+  void testIf() {
+    // Given
+    final var src = "if";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(IF), actual);
+  }
+
+  @Test
+  void testElse() {
+    // Given
+    final var src = "else";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(ELSE), actual);
+  }
+
+  @Test
+  void testBooleanLiterals() {
+    // Given
+    final var src = "true false";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(TRUE_LIT, FALSE_LIT), actual);
+  }
 }

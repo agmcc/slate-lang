@@ -1,0 +1,11 @@
+var check = true
+if check
+  print 'check'
+else
+  print 'Error: Expected check'
+
+var valid = 5 > 3
+if valid
+  print 'valid'
+else
+  print 'Error: Expected valid'

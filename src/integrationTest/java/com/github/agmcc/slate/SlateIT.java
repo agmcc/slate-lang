@@ -113,6 +113,107 @@ class SlateIT {
     assertEquals(expected, result.getStdOut());
   }
 
+  @Test
+  void testIfStatements() throws Exception {
+    // Given
+    final var src = getResourcePath("/If.slate").toString();
+
+    final var expected =
+        "5>3\n5>=5\n1<4\n1<=1\n3==3\n3!=2\n"
+            + "3.1>3\n3.0>=3.0\n3.1>=3.0\n2.5<3.0\n2.5<=2.5\n2.5==2.5\n2.5!=3.0\n3.0!=2.5\n"
+            + "1>0\n"
+            + "true\nfalse\n"
+            + "true\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("If");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
+  @Test
+  void testIfStatements_varRef() throws Exception {
+    // Given
+    final var src = getResourcePath("/IfVarRef.slate").toString();
+
+    final var expected = "check\nvalid\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("IfVarRef");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
+  @Test
+  void testIfStatements_and() throws Exception {
+    // Given
+    final var src = getResourcePath("/IfAnd.slate").toString();
+
+    final var expected = "3>1&&5<6\nfalse\nfalse\n3>1&&5<6&&4!=3\nfalse\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("IfAnd");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
+  @Test
+  void testIfStatements_or() throws Exception {
+    // Given
+    final var src = getResourcePath("/IfOr.slate").toString();
+
+    final var expected = "true\ntrue\ntrue\nfalse\ntrue\ntrue\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("IfOr");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
   private Path getClassFilePath(String srcFile) {
     final var classPathStr = srcFile.replace(SOURCE_EXT, CLASS_EXT);
     return Paths.get(classPathStr);

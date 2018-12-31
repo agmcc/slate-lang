@@ -101,6 +101,45 @@ class SlateParserTest {
     JSONAssert.assertEquals(expected, actual, true);
   }
 
+  @Test
+  void testConditionStatement_if() throws JSONException {
+    // Given
+    final var src = "if true a = 1";
+    final var expected = loadJsonFromYml("Condition.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
+
+  @Test
+  void testConditionStatement_if_else() throws JSONException {
+    // Given
+    final var src = "if true a = 1 else a = 2";
+    final var expected = loadJsonFromYml("Condition_else.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
+
+  @Test
+  void testConditionStatement_if_else_if_else() throws JSONException {
+    // Given
+    final var src = "if true a = 1 else if false a = 2 else a = 3";
+    final var expected = loadJsonFromYml("Condition_else_if.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
+
   private String loadJsonFromYml(String resource) {
     return SerializationUtils.yamlToJson(FileUtils.readResourceAsString(resource));
   }

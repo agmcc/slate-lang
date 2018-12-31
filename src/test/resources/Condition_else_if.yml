@@ -1,0 +1,65 @@
+---
+class: CompilationUnitContext
+children:
+  - class: ConditionStatementContext
+    children:
+      - class: ConditionContext
+        children:
+          - class: TerminalNodeImpl
+            text: if
+          - class: BooleanLiteralContext
+            children:
+              - class: TerminalNodeImpl
+                text: 'true'
+          - class: AssignmentStatementContext
+            children:
+              - class: AssignmentContext
+                children:
+                  - class: TerminalNodeImpl
+                    text: a
+                  - class: TerminalNodeImpl
+                    text: =
+                  - class: IntLiteralContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: '1'
+          - class: TerminalNodeImpl
+            text: else
+          - class: ConditionStatementContext
+            children:
+              - class: ConditionContext
+                children:
+                  - class: TerminalNodeImpl
+                    text: if
+                  - class: BooleanLiteralContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: 'false'
+                  - class: AssignmentStatementContext
+                    children:
+                      - class: AssignmentContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: a
+                          - class: TerminalNodeImpl
+                            text: =
+                          - class: IntLiteralContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: '2'
+                  - class: TerminalNodeImpl
+                    text: else
+                  - class: AssignmentStatementContext
+                    children:
+                      - class: AssignmentContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: a
+                          - class: TerminalNodeImpl
+                            text: =
+                          - class: IntLiteralContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: '3'
+  - class: TerminalNodeImpl
+    text: <EOF>
