@@ -15,6 +15,7 @@ import com.github.agmcc.slate.antlr.SlateParser.StatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.StringLiteralContext;
 import com.github.agmcc.slate.antlr.SlateParser.VarDeclarationStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.VarReferenceContext;
+import com.github.agmcc.slate.antlr.SlateParser.WhileLoopStatementContext;
 import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.BooleanLit;
@@ -42,6 +43,7 @@ import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.Statement;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import com.github.agmcc.slate.ast.statement.While;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -92,6 +94,9 @@ public class ParseTreeMapperImpl
           toAst(condition.trueStatement),
           condition.falseStatement != null ? toAst(condition.falseStatement) : null,
           toPosition(ctx));
+    } else if (ctx instanceof WhileLoopStatementContext) {
+      final var whileLoop = ((WhileLoopStatementContext) ctx).whileLoop();
+      return new While(toAst(whileLoop.expression()), toAst(whileLoop.body), toPosition(ctx));
     } else {
       throw new UnsupportedOperationException(getErrorMsg(ctx));
     }

@@ -9,6 +9,7 @@ import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Statement;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import com.github.agmcc.slate.ast.statement.While;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +86,38 @@ public class Validator {
           Condition.class,
           c -> {
             final var expression = c.getExpression();
+
+            if (expression instanceof VarReference) {
+              final var variable =
+                  currentScope.resolve().get(((VarReference) expression).getText());
+
+              if (variable == null) {
+                return;
+              }
+
+              final var value = variable.getValue();
+
+              if (!(value instanceof BooleanLit || value instanceof LogicExpression)) {
+                errors.add(
+                    new Error(
+                        String.format(
+                            INVALID_CONDITION_ERROR_TEMPLATE, expression.getPosition().getStart()),
+                        expression.getPosition().getStart()));
+              }
+            } else if (!(expression instanceof BooleanLit
+                || expression instanceof LogicExpression)) {
+              errors.add(
+                  new Error(
+                      String.format(
+                          INVALID_CONDITION_ERROR_TEMPLATE, expression.getPosition().getStart()),
+                      expression.getPosition().getStart()));
+            }
+          });
+
+      s.specificProcess(
+          While.class,
+          w -> {
+            final var expression = w.getExpression();
 
             if (expression instanceof VarReference) {
               final var variable =

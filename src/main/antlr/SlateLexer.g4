@@ -8,6 +8,7 @@ VAR: 'var';
 PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
+WHILE: 'while';
 
 // Literals
 INT_LIT: '0' | [1-9] (Digits? | '_'+ Digits);

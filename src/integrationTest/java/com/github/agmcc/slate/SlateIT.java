@@ -214,6 +214,54 @@ class SlateIT {
     assertEquals(expected, result.getStdOut());
   }
 
+  @Test
+  void testWhileLoop() throws Exception {
+    // Given
+    final var src = getResourcePath("/While.slate").toString();
+
+    final var expected = "10\n9\n8\n7\n6\n5\n4\n3\n2\n1\n0\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("While");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
+  @Test
+  void testWhileLoop_false() throws Exception {
+    // Given
+    final var src = getResourcePath("/WhileFalse.slate").toString();
+
+    final var expected = "done\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("WhileFalse");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
   private Path getClassFilePath(String srcFile) {
     final var classPathStr = srcFile.replace(SOURCE_EXT, CLASS_EXT);
     return Paths.get(classPathStr);

@@ -22,6 +22,7 @@ import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import com.github.agmcc.slate.ast.statement.While;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeAll;
@@ -558,6 +559,20 @@ class JvmCompilerTest {
                 new Condition(
                     new OrExpression(new BooleanLit("true"), new BooleanLit("false")),
                     new Print(new StringLit("msg")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertNotNull(actual);
+  }
+
+  @Test
+  void testCompile_while() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(new While(new BooleanLit("true"), new Print(new StringLit("Looping")))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);

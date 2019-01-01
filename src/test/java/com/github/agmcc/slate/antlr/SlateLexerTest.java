@@ -27,6 +27,7 @@ import static com.github.agmcc.slate.antlr.SlateLexer.STRING_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.SUB;
 import static com.github.agmcc.slate.antlr.SlateLexer.TRUE_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.VAR;
+import static com.github.agmcc.slate.antlr.SlateLexer.WHILE;
 import static com.github.agmcc.slate.antlr.SlateLexer.WS;
 import static com.github.agmcc.slate.test.ANTLRUtils.getTokenTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -329,5 +330,17 @@ class SlateLexerTest {
 
     // Then
     assertEquals(List.of(TRUE_LIT, FALSE_LIT), actual);
+  }
+
+  @Test
+  void testWhile() {
+    // Given
+    final var src = "while";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(WHILE), actual);
   }
 }

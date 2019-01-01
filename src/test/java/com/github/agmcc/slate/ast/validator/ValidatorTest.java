@@ -15,6 +15,7 @@ import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import com.github.agmcc.slate.ast.statement.While;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -305,4 +306,27 @@ class ValidatorTest {
     // Then
     assertEquals(expected, actual);
   }
+
+  @Test
+  void testValidate_whileLoop() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new While(
+                    new BooleanLit("true", Position.of(1, 6, 1, 10)),
+                    new Print(new StringLit("Looping", Position.of(2, 6, 2, 13))),
+                    Position.of(1, 1, 2, 13))),
+            Position.of(1, 1, 2, 13));
+
+    final var expected = Collections.emptyList();
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  // TODO: More while loop tests
 }

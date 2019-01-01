@@ -23,6 +23,7 @@ import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import com.github.agmcc.slate.ast.statement.While;
 import com.github.agmcc.slate.test.ANTLRUtils;
 import java.util.Collections;
 import java.util.List;
@@ -363,6 +364,51 @@ class ParseTreeMapperImplTest {
   }
 
   // TODO: More logical operator tests
+
+  @Test
+  void testToAst_whileLoop() {
+    // Given
+    final var src = "while a > 1 print a";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new While(
+                    new GreaterExpression(new VarReference("a"), new IntLit("1")),
+                    new Print(new VarReference("a")))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_whileLoop_block() {
+    // Given
+    final var src = "var a = 3 while a > 1 { print a a = a - 1 }";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("a", new IntLit("3")),
+                new While(
+                    new GreaterExpression(new VarReference("a"), new IntLit("1")),
+                    new Block(
+                        List.of(
+                            new Print(new VarReference("a")),
+                            new Assignment(
+                                "a",
+                                new SubtractionExpression(
+                                    new VarReference("a"), new IntLit("1"))))))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
 
   @Test
   void testToAst_positions() {

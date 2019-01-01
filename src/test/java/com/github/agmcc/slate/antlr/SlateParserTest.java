@@ -140,6 +140,32 @@ class SlateParserTest {
     JSONAssert.assertEquals(expected, actual, true);
   }
 
+  @Test
+  void testWhileLoop_statement() throws JSONException {
+    // Given
+    final var src = "while true print 'Looping'";
+    final var expected = loadJsonFromYml("While.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
+
+  @Test
+  void testWhileLoop_block() throws JSONException {
+    // Given
+    final var src = "while true { print 'Looping' }";
+    final var expected = loadJsonFromYml("While_block.yml");
+
+    // When
+    final var actual = jsonParseTree(src);
+
+    // Then
+    JSONAssert.assertEquals(expected, actual, true);
+  }
+
   private String loadJsonFromYml(String resource) {
     return SerializationUtils.yamlToJson(FileUtils.readResourceAsString(resource));
   }

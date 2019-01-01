@@ -8,7 +8,8 @@ statement: varDeclaration # varDeclarationStatement
          | assignment # assignmentStatement
          | print # printStatement
          | block # blockStatement
-         | condition # conditionStatement;
+         | condition # conditionStatement
+         | whileLoop # whileLoopStatement;
 
 print: PRINT expression;
 
@@ -19,6 +20,8 @@ assignment: ID ASSIGN expression;
 block: L_BRACE statement* R_BRACE;
 
 condition: IF expression trueStatement=statement (ELSE falseStatement=statement)?;
+
+whileLoop: WHILE expression body=statement;
 
 expression: left=expression operator=(DIV|MUL) right=expression # binaryOperation
           | left=expression operator=(ADD|SUB) right=expression # binaryOperation
