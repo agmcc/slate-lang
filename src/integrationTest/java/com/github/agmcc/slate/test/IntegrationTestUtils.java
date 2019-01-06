@@ -1,5 +1,7 @@
 package com.github.agmcc.slate.test;
 
+import static com.github.agmcc.slate.test.FileUtils.normaliseLineSeparators;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
@@ -34,9 +36,5 @@ public final class IntegrationTestUtils {
       System.setOut(defaultOut);
       return new InvocationResult(result, normaliseLineSeparators(os.toString()));
     }
-  }
-
-  private static String normaliseLineSeparators(String s) {
-    return s.replace("\r\n", "\n").replace('\r', '\n');
   }
 }

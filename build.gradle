@@ -15,6 +15,10 @@ repositories {
 sourceCompatibility = 10
 targetCompatibility = 10
 
+testSets {
+    integrationTest
+}
+
 dependencies {
     antlr 'org.antlr:antlr4:4.7.1'
 
@@ -39,6 +43,8 @@ dependencies {
     testImplementation 'org.skyscreamer:jsonassert:1.5.0'
 
     testImplementation 'com.google.guava:guava:27.0-jre'
+
+    integrationTestImplementation sourceSets.test.output
 
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
@@ -69,10 +75,6 @@ task fatJar(type: OneJar) {
 }
 
 assemble.dependsOn fatJar
-
-testSets {
-    integrationTest
-}
 
 check.dependsOn integrationTest
 integrationTest.mustRunAfter(test)

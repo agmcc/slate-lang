@@ -1,8 +1,9 @@
 package com.github.agmcc.slate.bytecode;
 
+import static com.github.agmcc.slate.test.FileUtils.readResourceAsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.expression.BooleanLit;
@@ -23,12 +24,17 @@ import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import com.github.agmcc.slate.ast.statement.While;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.TraceClassVisitor;
 
 class JvmCompilerTest {
 
@@ -63,7 +69,7 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
   }
 
   @ParameterizedTest
@@ -85,6 +91,20 @@ class JvmCompilerTest {
 
     // When Then
     assertThrows(NullPointerException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
+  }
+
+  @Test
+  void testCompile_varDeclaration_int() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("count", new IntLit("100"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_int.txt"), readByteCode(actual));
   }
 
   @ParameterizedTest
@@ -111,7 +131,7 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
   }
 
   @ParameterizedTest
@@ -136,7 +156,21 @@ class JvmCompilerTest {
   }
 
   @Test
-  void testCompile_varDeclaration_string_valid() {
+  void testCompile_varDeclaration_decimal() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("count", new DecLit("99.99"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_decimal.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_varDeclaration_string() {
     // Given
     final var compilationUnit =
         new CompilationUnit(List.of(new VarDeclaration("message", new StringLit("Hello"))));
@@ -145,7 +179,8 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_string.txt"), readByteCode(actual));
   }
 
   @Test
@@ -157,6 +192,51 @@ class JvmCompilerTest {
     // When Then
     assertThrows(
         IllegalArgumentException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
+  }
+
+  @Test
+  void testCompile_varDeclaration_boolean_true() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("true"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_boolean_true.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_varDeclaration_boolean_false() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("false"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_boolean_false.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_varDeclaration_boolean_invalid() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("invalid"))));
+
+    // When Then
+    final var e =
+        assertThrows(
+            UnsupportedOperationException.class,
+            () -> compiler.compile(compilationUnit, CLASS_NAME));
+
+    assertEquals("Invalid boolean value: invalid", e.getMessage());
   }
 
   @Test
@@ -172,7 +252,8 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_addition.txt"), readByteCode(actual));
   }
 
   @Test
@@ -188,7 +269,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_addition_mixed.txt"), readByteCode(actual));
   }
 
   @Test
@@ -205,7 +288,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_addition_string.txt"), readByteCode(actual));
   }
 
   @Test
@@ -221,7 +306,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_subtraction.txt"), readByteCode(actual));
   }
 
   @Test
@@ -237,7 +324,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_subtraction_mixed.txt"), readByteCode(actual));
   }
 
   @Test
@@ -253,7 +342,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_multiplication.txt"), readByteCode(actual));
   }
 
   @Test
@@ -270,7 +361,10 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_multiplication_mixed.txt"),
+        readByteCode(actual));
   }
 
   @Test
@@ -286,7 +380,8 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_division.txt"), readByteCode(actual));
   }
 
   @Test
@@ -302,7 +397,26 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/vardec/varDec_division_mixed.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_varDeclaration_greater() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "valid", new GreaterExpression(new IntLit("5"), new IntLit("3")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_greater.txt"), readByteCode(actual));
   }
 
   /* Assignment */
@@ -322,7 +436,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/assignment/assignment_int.txt"), readByteCode(actual));
   }
 
   @Test
@@ -338,7 +454,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/assignment/assignment_mixed.txt"), readByteCode(actual));
   }
 
   @Test
@@ -365,7 +483,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/assignment/assignment_varRef.txt"), readByteCode(actual));
   }
 
   @Test
@@ -415,7 +535,8 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/print/print_int.txt"), readByteCode(actual));
   }
 
   /* Block */
@@ -434,70 +555,12 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
-  }
-
-  /* Booleans */
-
-  @Test
-  void testCompile_boolean_true() {
-    // Given
-    final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("true"))));
-
-    // When
-    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
-
-    // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/block/block.txt"), readByteCode(actual));
   }
 
   @Test
-  void testCompile_boolean_false() {
-    // Given
-    final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("false"))));
-
-    // When
-    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
-
-    // Then
-    assertNotNull(actual);
-  }
-
-  @Test
-  void testCompile_boolean_invalid() {
-    // Given
-    final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("invalid"))));
-
-    // When Then
-    final var e =
-        assertThrows(
-            UnsupportedOperationException.class,
-            () -> compiler.compile(compilationUnit, CLASS_NAME));
-
-    assertEquals("Invalid boolean value: invalid", e.getMessage());
-  }
-
-  @Test
-  void testCompile_varDeclaration_logicExpression() {
-    // Given
-    final var compilationUnit =
-        new CompilationUnit(
-            List.of(
-                new VarDeclaration(
-                    "valid", new GreaterExpression(new IntLit("5"), new IntLit("3")))));
-
-    // When
-    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
-
-    // Then
-    assertNotNull(actual);
-  }
-
-  @Test
-  void testCompile_logicalAnd_booleanLiterals() {
+  void testCompile_condition_and_boolean() {
     // Given
     final var compilationUnit =
         new CompilationUnit(
@@ -510,11 +573,13 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/condition/condition_and_boolean.txt"), readByteCode(actual));
   }
 
   @Test
-  void testCompile_logicalAnd_boolean_logical() {
+  void testCompile_condition_and_boolean_greater() {
     // Given
     final var compilationUnit =
         new CompilationUnit(
@@ -529,11 +594,14 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/condition/condition_and_boolean_greater.txt"),
+        readByteCode(actual));
   }
 
   @Test
-  void testCompile_logicalAnd_varRef() {
+  void testCompile_condition_and_varRef() {
     // Given
     final var compilationUnit =
         new CompilationUnit(
@@ -547,11 +615,14 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/condition/condition_and_boolean_varRef.txt"),
+        readByteCode(actual));
   }
 
   @Test
-  void testCompile_logicalOr_boolean() {
+  void testCompile_condition_or_boolean() {
     // Given
     final var compilationUnit =
         new CompilationUnit(
@@ -564,7 +635,9 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(
+        readResourceAsString("bytecode/condition/condition_or_boolean.txt"), readByteCode(actual));
   }
 
   @Test
@@ -578,6 +651,23 @@ class JvmCompilerTest {
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
 
     // Then
-    assertNotNull(actual);
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/while/while.txt"), readByteCode(actual));
+  }
+
+  /*
+  Helper methods
+   */
+
+  private String readByteCode(byte[] bytes) {
+    final var stringWriter = new StringWriter();
+    new ClassReader(bytes).accept(new TraceClassVisitor(new PrintWriter(stringWriter)), 0);
+    return stringWriter.toString();
+  }
+
+  private String verifyByteCode(byte[] bytes) {
+    final var stringWriter = new StringWriter();
+    CheckClassAdapter.verify(new ClassReader(bytes), false, new PrintWriter(stringWriter));
+    return stringWriter.toString();
   }
 }

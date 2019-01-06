@@ -13,10 +13,14 @@ public final class FileUtils {
   public static String readResourceAsString(String path) {
     final var url = Resources.getResource(path);
     try {
-      return Resources.toString(url, Charsets.UTF_8);
+      return normaliseLineSeparators(Resources.toString(url, Charsets.UTF_8));
     } catch (IOException e) {
       e.printStackTrace();
     }
     return null;
+  }
+
+  public static String normaliseLineSeparators(String s) {
+    return s.replace("\r\n", "\n").replace('\r', '\n');
   }
 }

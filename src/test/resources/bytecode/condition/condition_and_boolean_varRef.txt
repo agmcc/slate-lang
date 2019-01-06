@@ -1,0 +1,37 @@
+// class version 50.0 (50)
+// access flags 0x1
+public class Test {
+
+
+  // access flags 0x9
+  public static main([Ljava/lang/String;)V
+   L0
+    ICONST_1
+    ISTORE 1
+    ICONST_1
+    IFGT L1
+    ICONST_0
+    GOTO L2
+   L1
+   FRAME APPEND [I]
+    ILOAD 1
+    IFGT L3
+    ICONST_0
+    GOTO L2
+   L3
+   FRAME SAME
+    ICONST_1
+    GOTO L2
+   L2
+   FRAME SAME1 I
+    IFGT L4
+   L4
+   FRAME SAME
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "msg"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    RETURN
+    LOCALVARIABLE check Z L0 L0 1
+    MAXSTACK = 2
+    MAXLOCALS = 2
+}

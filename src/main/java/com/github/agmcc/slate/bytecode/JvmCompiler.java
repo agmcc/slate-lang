@@ -8,29 +8,22 @@ import static org.objectweb.asm.Opcodes.V1_6;
 
 import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.util.CheckClassAdapter;
-import org.objectweb.asm.util.TraceClassVisitor;
 
 public class JvmCompiler {
 
-  private final AtomicInteger localVarCount = new AtomicInteger();
-
   public byte[] compile(CompilationUnit compilationUnit, String className) {
     final var cw = new ClassWriter(COMPUTE_FRAMES);
-    final var tcv = new TraceClassVisitor(cw, new PrintWriter(System.out));
-    final var cv = new CheckClassAdapter(tcv);
 
-    cv.visit(V1_6, ACC_PUBLIC, className, null, Type.getInternalName(Object.class), null);
+    cw.visit(V1_6, ACC_PUBLIC, className, null, Type.getInternalName(Object.class), null);
 
     final var mv =
-        cv.visitMethod(
+        cw.visitMethod(
             ACC_PUBLIC + ACC_STATIC,
             "main",
             Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String[].class)),
@@ -48,6 +41,8 @@ public class JvmCompiler {
     final var varMap = new HashMap<String, Variable>();
 
     mv.visitLabel(methodEnd);
+
+    final var localVarCount = new AtomicInteger();
 
     // TODO: Variables are currently global scope for compilation (scope checks done earlier)
     compilationUnit.specificProcess(
@@ -69,7 +64,7 @@ public class JvmCompiler {
     mv.visitMaxs(100, 100); // TODO: Use proper values
     mv.visitEnd();
 
-    cv.visitEnd();
+    cw.visitEnd();
 
     return cw.toByteArray();
   }
