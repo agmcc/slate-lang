@@ -9,6 +9,10 @@ import com.github.agmcc.slate.ast.CompilationUnit;
 import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
+import com.github.agmcc.slate.ast.expression.PostDecrement;
+import com.github.agmcc.slate.ast.expression.PostIncrement;
+import com.github.agmcc.slate.ast.expression.PreDecrement;
+import com.github.agmcc.slate.ast.expression.PreIncrement;
 import com.github.agmcc.slate.ast.expression.StringLit;
 import com.github.agmcc.slate.ast.expression.VarReference;
 import com.github.agmcc.slate.ast.expression.binary.AdditionExpression;
@@ -17,10 +21,12 @@ import com.github.agmcc.slate.ast.expression.binary.MultiplicationExpression;
 import com.github.agmcc.slate.ast.expression.binary.SubtractionExpression;
 import com.github.agmcc.slate.ast.expression.binary.logic.AndExpression;
 import com.github.agmcc.slate.ast.expression.binary.logic.GreaterExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.LessExpression;
 import com.github.agmcc.slate.ast.expression.binary.logic.OrExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
+import com.github.agmcc.slate.ast.statement.ForTraditional;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import com.github.agmcc.slate.ast.statement.While;
@@ -653,6 +659,94 @@ class JvmCompilerTest {
     // Then
     assertTrue(verifyByteCode(actual).isEmpty());
     assertEquals(readResourceAsString("bytecode/while/while.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_postIncrement() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PostIncrement("count"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_postInc.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_preIncrement() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PreIncrement("count"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_preInc.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_postDecrement() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PostDecrement("count"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_postDec.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_preDecrement() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PreDecrement("count"))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/vardec/varDec_preDec.txt"), readByteCode(actual));
+  }
+
+  @Test
+  void testCompile_forTraditional() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new ForTraditional(
+                    new VarDeclaration("i", new IntLit("0")),
+                    new LessExpression(new VarReference("i"), new IntLit("10")),
+                    new PostIncrement("i"),
+                    new Print(new VarReference("i")))));
+
+    // When
+    final var actual = compiler.compile(compilationUnit, CLASS_NAME);
+
+    // Then
+    assertTrue(verifyByteCode(actual).isEmpty());
+    assertEquals(readResourceAsString("bytecode/for/for_traditional.txt"), readByteCode(actual));
   }
 
   /*

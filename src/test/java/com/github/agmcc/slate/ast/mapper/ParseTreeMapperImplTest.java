@@ -11,6 +11,10 @@ import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
+import com.github.agmcc.slate.ast.expression.PostDecrement;
+import com.github.agmcc.slate.ast.expression.PostIncrement;
+import com.github.agmcc.slate.ast.expression.PreDecrement;
+import com.github.agmcc.slate.ast.expression.PreIncrement;
 import com.github.agmcc.slate.ast.expression.StringLit;
 import com.github.agmcc.slate.ast.expression.VarReference;
 import com.github.agmcc.slate.ast.expression.binary.AdditionExpression;
@@ -18,9 +22,11 @@ import com.github.agmcc.slate.ast.expression.binary.DivisionExpression;
 import com.github.agmcc.slate.ast.expression.binary.MultiplicationExpression;
 import com.github.agmcc.slate.ast.expression.binary.SubtractionExpression;
 import com.github.agmcc.slate.ast.expression.binary.logic.GreaterExpression;
+import com.github.agmcc.slate.ast.expression.binary.logic.LessExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
+import com.github.agmcc.slate.ast.statement.ForTraditional;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import com.github.agmcc.slate.ast.statement.While;
@@ -402,6 +408,120 @@ class ParseTreeMapperImplTest {
                                 "a",
                                 new SubtractionExpression(
                                     new VarReference("a"), new IntLit("1"))))))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_postIncrement() {
+    // Given
+    final var src = "var count = 5 var result = count++";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PostIncrement("count"))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_preIncrement() {
+    // Given
+    final var src = "var count = 5 var result = ++count";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PreIncrement("count"))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_postDecrement() {
+    // Given
+    final var src = "var count = 5 var result = count--";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PostDecrement("count"))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_preDecrement() {
+    // Given
+    final var src = "var count = 5 var result = --count";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5")),
+                new VarDeclaration("result", new PreDecrement("count"))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_forTraditional() {
+    // Given
+    final var src = "for var i = 0 i < 10 i++ print i";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new ForTraditional(
+                    new VarDeclaration("i", new IntLit("0")),
+                    new LessExpression(new VarReference("i"), new IntLit("10")),
+                    new PostIncrement("i"),
+                    new Print(new VarReference("i")))));
+
+    // When
+    final var actual = mapper.toAst(ANTLRUtils.parseString(src));
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testToAst_forTraditional_block() {
+    // Given
+    final var src = "for var i = 0 i < 10 i++ { print i }";
+
+    final var expected =
+        new CompilationUnit(
+            List.of(
+                new ForTraditional(
+                    new VarDeclaration("i", new IntLit("0")),
+                    new LessExpression(new VarReference("i"), new IntLit("10")),
+                    new PostIncrement("i"),
+                    new Block(List.of(new Print(new VarReference("i")))))));
 
     // When
     final var actual = mapper.toAst(ANTLRUtils.parseString(src));

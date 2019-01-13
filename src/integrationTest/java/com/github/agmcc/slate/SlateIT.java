@@ -262,6 +262,54 @@ class SlateIT {
     assertEquals(expected, result.getStdOut());
   }
 
+  @Test
+  void testIncrementDecrement() throws Exception {
+    // Given
+    final var src = getResourcePath("/IncrementDecrement.slate").toString();
+
+    final var expected = "5\n6\n" + "9\n9\n" + "3\n2\n" + "1\n1\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("IncrementDecrement");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
+  @Test
+  void testForLoop_traditional() throws Exception {
+    // Given
+    final var src = getResourcePath("/ForTraditional.slate").toString();
+
+    final var expected = "0\n1\n2\n3\n4\n" + "9\n8\n7\n6\n5\n4\n3\n2\n";
+
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("ForTraditional");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
   private Path getClassFilePath(String srcFile) {
     final var classPathStr = srcFile.replace(SOURCE_EXT, CLASS_EXT);
     return Paths.get(classPathStr);

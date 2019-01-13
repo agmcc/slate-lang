@@ -8,8 +8,14 @@ import com.github.agmcc.slate.antlr.SlateParser.CompilationUnitContext;
 import com.github.agmcc.slate.antlr.SlateParser.ConditionStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.DecimalLiteralContext;
 import com.github.agmcc.slate.antlr.SlateParser.ExpressionContext;
+import com.github.agmcc.slate.antlr.SlateParser.ForLoopStatementContext;
+import com.github.agmcc.slate.antlr.SlateParser.ForTraditionalContext;
 import com.github.agmcc.slate.antlr.SlateParser.IntLiteralContext;
 import com.github.agmcc.slate.antlr.SlateParser.ParenExpressionContext;
+import com.github.agmcc.slate.antlr.SlateParser.PostDecrementContext;
+import com.github.agmcc.slate.antlr.SlateParser.PostIncrementContext;
+import com.github.agmcc.slate.antlr.SlateParser.PreDecrementContext;
+import com.github.agmcc.slate.antlr.SlateParser.PreIncrementContext;
 import com.github.agmcc.slate.antlr.SlateParser.PrintStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.StatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.StringLiteralContext;
@@ -22,6 +28,10 @@ import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.Expression;
 import com.github.agmcc.slate.ast.expression.IntLit;
+import com.github.agmcc.slate.ast.expression.PostDecrement;
+import com.github.agmcc.slate.ast.expression.PostIncrement;
+import com.github.agmcc.slate.ast.expression.PreDecrement;
+import com.github.agmcc.slate.ast.expression.PreIncrement;
 import com.github.agmcc.slate.ast.expression.StringLit;
 import com.github.agmcc.slate.ast.expression.VarReference;
 import com.github.agmcc.slate.ast.expression.binary.AdditionExpression;
@@ -40,6 +50,8 @@ import com.github.agmcc.slate.ast.expression.binary.logic.OrExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
+import com.github.agmcc.slate.ast.statement.For;
+import com.github.agmcc.slate.ast.statement.ForTraditional;
 import com.github.agmcc.slate.ast.statement.Print;
 import com.github.agmcc.slate.ast.statement.Statement;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
@@ -97,6 +109,8 @@ public class ParseTreeMapperImpl
     } else if (ctx instanceof WhileLoopStatementContext) {
       final var whileLoop = ((WhileLoopStatementContext) ctx).whileLoop();
       return new While(toAst(whileLoop.expression()), toAst(whileLoop.body), toPosition(ctx));
+    } else if (ctx instanceof ForLoopStatementContext) {
+      return toAst((ForLoopStatementContext) ctx);
     } else {
       throw new UnsupportedOperationException(getErrorMsg(ctx));
     }
@@ -118,6 +132,14 @@ public class ParseTreeMapperImpl
       return toAst(((ParenExpressionContext) ctx).expression());
     } else if (ctx instanceof BooleanLiteralContext) {
       return new BooleanLit(ctx.getText(), toPosition(ctx));
+    } else if (ctx instanceof PostIncrementContext) {
+      return new PostIncrement(((PostIncrementContext) ctx).ID().getText(), toPosition(ctx));
+    } else if (ctx instanceof PreIncrementContext) {
+      return new PreIncrement(((PreIncrementContext) ctx).ID().getText(), toPosition(ctx));
+    } else if (ctx instanceof PostDecrementContext) {
+      return new PostDecrement(((PostDecrementContext) ctx).ID().getText(), toPosition(ctx));
+    } else if (ctx instanceof PreDecrementContext) {
+      return new PreDecrement(((PreDecrementContext) ctx).ID().getText(), toPosition(ctx));
     } else {
       throw new UnsupportedOperationException(getErrorMsg(ctx));
     }
@@ -151,6 +173,21 @@ public class ParseTreeMapperImpl
         return new OrExpression(toAst(ctx.left), toAst(ctx.right), toPosition(ctx));
       default:
         throw new UnsupportedOperationException(getErrorMsg(ctx));
+    }
+  }
+
+  private For toAst(ForLoopStatementContext ctx) {
+    final var forLoop = ctx.forLoop();
+    if (forLoop instanceof ForTraditionalContext) {
+      final var forLoopTrad = (ForTraditionalContext) forLoop;
+      return new ForTraditional(
+          (VarDeclaration) toAst(forLoopTrad.declaration),
+          toAst(forLoopTrad.check),
+          toAst(forLoopTrad.after),
+          toAst(forLoopTrad.body),
+          toPosition(ctx));
+    } else {
+      throw new UnsupportedOperationException(getErrorMsg(ctx));
     }
   }
 

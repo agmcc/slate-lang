@@ -9,7 +9,8 @@ statement: varDeclaration # varDeclarationStatement
          | print # printStatement
          | block # blockStatement
          | condition # conditionStatement
-         | whileLoop # whileLoopStatement;
+         | whileLoop # whileLoopStatement
+         | forLoop # forLoopStatement;
 
 print: PRINT expression;
 
@@ -23,6 +24,8 @@ condition: IF expression trueStatement=statement (ELSE falseStatement=statement)
 
 whileLoop: WHILE expression body=statement;
 
+forLoop: FOR declaration=statement check=expression after=expression body=statement # forTraditional;
+
 expression: left=expression operator=(DIV|MUL) right=expression # binaryOperation
           | left=expression operator=(ADD|SUB) right=expression # binaryOperation
           | left=expression operator=(GREATER|GREATER_EQ|EQUAL|NOT_EQUAL|LESS|LESS_EQ|AND|OR) right=expression # binaryOperation
@@ -31,4 +34,8 @@ expression: left=expression operator=(DIV|MUL) right=expression # binaryOperatio
           | STRING_LIT # stringLiteral
           | INT_LIT # intLiteral
           | DEC_LIT # decimalLiteral
-          | (TRUE_LIT|FALSE_LIT) # booleanLiteral;
+          | (TRUE_LIT|FALSE_LIT) # booleanLiteral
+          | INCREMENT ID # preIncrement
+          | ID INCREMENT # postIncrement
+          | DECREMENT ID # preDecrement
+          | ID DECREMENT # postDecrement;

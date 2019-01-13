@@ -21,42 +21,51 @@ import org.objectweb.asm.MethodVisitor;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Condition implements Statement {
+public class ForTraditional implements For {
+
+  private final VarDeclaration init;
 
   private final Expression expression;
 
-  private final Statement trueStatement;
+  private final Expression update;
 
-  private Statement falseStatement;
+  private final Statement body;
 
   private Position position;
 
   @Override
   public void process(Consumer<Node> operation) {
     operation.accept(this);
+    init.process(operation);
     expression.process(operation);
-    trueStatement.process(operation);
-    if (falseStatement != null) {
-      falseStatement.process(operation);
-    }
+    update.process(operation);
+    body.process(operation);
   }
 
   @Override
   public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
+    final var checkLabel = new Label();
     final var trueLabel = new Label();
     final var endLabel = new Label();
 
-    // Assume VarRefs have already been validated
+    // Declare loop variable
+    init.generate(mv, varMap);
+
+    // Check expression
+    mv.visitLabel(checkLabel);
     expression.push(mv, varMap);
     mv.visitJumpInsn(IFGT, trueLabel);
 
-    if (falseStatement != null) {
-      falseStatement.generate(mv, varMap);
-      mv.visitJumpInsn(GOTO, endLabel); // double check if without else works when false
-    }
+    // False - exit loop
+    mv.visitJumpInsn(GOTO, endLabel);
 
+    // True - execute body and apply update
     mv.visitLabel(trueLabel);
-    trueStatement.generate(mv, varMap);
+    body.generate(mv, varMap);
+    update.push(mv, varMap);
+    mv.visitInsn(POP); // discard return value for update expression
+    mv.visitJumpInsn(GOTO, checkLabel);
+
     mv.visitLabel(endLabel);
   }
 }

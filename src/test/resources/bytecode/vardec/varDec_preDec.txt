@@ -1,0 +1,19 @@
+// class version 50.0 (50)
+// access flags 0x1
+public class Test {
+
+
+  // access flags 0x9
+  public static main([Ljava/lang/String;)V
+   L0
+    LDC 5
+    ISTORE 1
+    IINC 1 -1
+    ILOAD 1
+    ISTORE 2
+    RETURN
+    LOCALVARIABLE count I L0 L0 1
+    LOCALVARIABLE result I L0 L0 2
+    MAXSTACK = 1
+    MAXLOCALS = 3
+}

@@ -3,16 +3,19 @@ package com.github.agmcc.slate.antlr;
 import static com.github.agmcc.slate.antlr.SlateLexer.ADD;
 import static com.github.agmcc.slate.antlr.SlateLexer.AND;
 import static com.github.agmcc.slate.antlr.SlateLexer.ASSIGN;
+import static com.github.agmcc.slate.antlr.SlateLexer.DECREMENT;
 import static com.github.agmcc.slate.antlr.SlateLexer.DEC_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.DIV;
 import static com.github.agmcc.slate.antlr.SlateLexer.ELSE;
 import static com.github.agmcc.slate.antlr.SlateLexer.EQUAL;
 import static com.github.agmcc.slate.antlr.SlateLexer.FALSE_LIT;
+import static com.github.agmcc.slate.antlr.SlateLexer.FOR;
 import static com.github.agmcc.slate.antlr.SlateLexer.GREATER;
 import static com.github.agmcc.slate.antlr.SlateLexer.GREATER_EQ;
 import static com.github.agmcc.slate.antlr.SlateLexer.HIDDEN;
 import static com.github.agmcc.slate.antlr.SlateLexer.ID;
 import static com.github.agmcc.slate.antlr.SlateLexer.IF;
+import static com.github.agmcc.slate.antlr.SlateLexer.INCREMENT;
 import static com.github.agmcc.slate.antlr.SlateLexer.INT_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.LESS;
 import static com.github.agmcc.slate.antlr.SlateLexer.LESS_EQ;
@@ -342,5 +345,41 @@ class SlateLexerTest {
 
     // Then
     assertEquals(List.of(WHILE), actual);
+  }
+
+  @Test
+  void testFor() {
+    // Given
+    final var src = "for";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(FOR), actual);
+  }
+
+  @Test
+  void testIncrement() {
+    // Given
+    final var src = "++";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(INCREMENT), actual);
+  }
+
+  @Test
+  void testDecrement() {
+    // Given
+    final var src = "--";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(DECREMENT), actual);
   }
 }

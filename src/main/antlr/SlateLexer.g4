@@ -9,6 +9,7 @@ PRINT: 'print';
 IF: 'if';
 ELSE: 'else';
 WHILE: 'while';
+FOR: 'for';
 
 // Literals
 INT_LIT: '0' | [1-9] (Digits? | '_'+ Digits);
@@ -18,6 +19,8 @@ TRUE_LIT: 'true';
 FALSE_LIT: 'false';
 
 // Operators
+INCREMENT: '++';
+DECREMENT: '--';
 ADD: '+';
 SUB: '-';
 MUL: '*';

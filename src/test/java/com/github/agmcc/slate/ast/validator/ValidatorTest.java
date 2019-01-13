@@ -7,6 +7,7 @@ import com.github.agmcc.slate.ast.Point;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
+import com.github.agmcc.slate.ast.expression.PostIncrement;
 import com.github.agmcc.slate.ast.expression.StringLit;
 import com.github.agmcc.slate.ast.expression.VarReference;
 import com.github.agmcc.slate.ast.expression.binary.logic.GreaterExpression;
@@ -329,4 +330,68 @@ class ValidatorTest {
   }
 
   // TODO: More while loop tests
+
+  @Test
+  void testValidate_incrementDecrement() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new IntLit("5"), Position.of(1, 1, 1, 13)),
+                new VarDeclaration("result", new PostIncrement("count"), Position.of(2, 1, 2, 20))),
+            Position.of(1, 1, 2, 20));
+
+    final var expected = Collections.emptyList();
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_incrementDecrement_missingVar() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration(
+                    "result",
+                    new PostIncrement("count", Position.of(1, 13, 1, 20)),
+                    Position.of(1, 1, 1, 20))),
+            Position.of(1, 1, 1, 20));
+
+    final var expected =
+        List.of(new Error("No variable named 'count' at [1,13]", new Point(1, 13)));
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testValidate_incrementDecrement_notNumeric() {
+    // Given
+    final var compilationUnit =
+        new CompilationUnit(
+            List.of(
+                new VarDeclaration("count", new BooleanLit("true"), Position.of(1, 1, 1, 13)),
+                new VarDeclaration(
+                    "result",
+                    new PostIncrement("count", Position.of(2, 13, 2, 20)),
+                    Position.of(2, 1, 2, 20))),
+            Position.of(1, 1, 2, 20));
+
+    final var expected =
+        List.of(new Error("Variable 'count' must be a numeric type at [2,13]", new Point(2, 13)));
+
+    // When
+    final var actual = validator.validate(compilationUnit);
+
+    // Then
+    assertEquals(expected, actual);
+  }
 }
