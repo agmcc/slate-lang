@@ -10,8 +10,18 @@ IF: 'if';
 ELSE: 'else';
 WHILE: 'while';
 FOR: 'for';
+RETURN: 'return';
+
+// Types
+INT: 'int';
+DEC: 'dec';
+STRING: 'string';
+BOOL: 'bool';
+ARRAY: '[]';
 
 // Literals
+COMMA: ',';
+COLON: ':';
 INT_LIT: '0' | [1-9] (Digits? | '_'+ Digits);
 DEC_LIT: Digits '.' Digits? | '.' Digits;
 STRING_LIT: '\''~('\r'|'\n'|'\'')*'\'';

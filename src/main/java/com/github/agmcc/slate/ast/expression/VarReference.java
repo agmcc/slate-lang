@@ -2,9 +2,7 @@ package com.github.agmcc.slate.ast.expression;
 
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
-import java.util.Optional;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -33,16 +31,12 @@ public class VarReference implements Expression {
   }
 
   @Override
-  public Type getType(Map<String, Variable> varMap) {
-    return varMap.get(text).getType();
+  public Type getType(Scope scope) {
+    return scope.getVariable(text).getType();
   }
 
   @Override
-  public void push(MethodVisitor mv, Map<String, Variable> varMap) {
-    final var variable =
-        Optional.ofNullable(varMap.get(text))
-            .orElseThrow(() -> new RuntimeException("Missing variable: " + text));
-
-    mv.visitVarInsn(getType(varMap).getOpcode(ILOAD), variable.getIndex());
+  public void push(MethodVisitor mv, Scope scope) {
+    mv.visitVarInsn(getType(scope).getOpcode(ILOAD), scope.getVariable(text).getIndex());
   }
 }

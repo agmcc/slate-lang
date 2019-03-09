@@ -3,8 +3,7 @@ package com.github.agmcc.slate.ast.statement;
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -42,21 +41,21 @@ public class Condition implements Statement {
   }
 
   @Override
-  public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
+  public void generate(MethodVisitor mv, Scope scope) {
     final var trueLabel = new Label();
     final var endLabel = new Label();
 
     // Assume VarRefs have already been validated
-    expression.push(mv, varMap);
+    expression.push(mv, scope);
     mv.visitJumpInsn(IFGT, trueLabel);
 
     if (falseStatement != null) {
-      falseStatement.generate(mv, varMap);
+      falseStatement.generate(mv, scope);
       mv.visitJumpInsn(GOTO, endLabel); // double check if without else works when false
     }
 
     mv.visitLabel(trueLabel);
-    trueStatement.generate(mv, varMap);
+    trueStatement.generate(mv, scope);
     mv.visitLabel(endLabel);
   }
 }

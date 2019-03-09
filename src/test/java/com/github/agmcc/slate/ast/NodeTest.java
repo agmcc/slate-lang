@@ -10,19 +10,24 @@ import com.github.agmcc.slate.ast.expression.VarReference;
 import com.github.agmcc.slate.ast.expression.binary.AdditionExpression;
 import com.github.agmcc.slate.ast.expression.binary.BinaryExpression;
 import com.github.agmcc.slate.ast.expression.binary.DivisionExpression;
+import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Print;
+import com.github.agmcc.slate.ast.statement.Statement;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.objectweb.asm.Type;
 
 class NodeTest {
 
   @Test
   void testProcess() {
     // Given
-    final var compilationUnit = new CompilationUnit(List.of(new Print(new DecLit("10.5"))));
+    final var compilationUnit =
+        createCompilationUnitWithMethod(List.of(new Print(new DecLit("10.5"))));
 
     // When
     compilationUnit.process(n -> assertNull(n.getPosition()));
@@ -32,7 +37,8 @@ class NodeTest {
   void testSpecificProcess() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new Print(new DecLit("10.5"), Position.of(0, 0, 0, 0))));
+        createCompilationUnitWithMethod(
+            List.of(new Print(new DecLit("10.5"), Position.of(0, 0, 0, 0))));
 
     // When
     compilationUnit.specificProcess(Print.class, p -> assertNotNull(p.getPosition()));
@@ -66,5 +72,12 @@ class NodeTest {
 
     // Then
     assertEquals(Set.of(AdditionExpression.class, DivisionExpression.class), matches);
+  }
+
+  private CompilationUnit createCompilationUnitWithMethod(List<Statement> statements) {
+    return new CompilationUnit(
+        List.of(
+            new MethodDeclaration(
+                "test", Collections.emptyList(), Type.VOID_TYPE, new Block(statements))));
   }
 }

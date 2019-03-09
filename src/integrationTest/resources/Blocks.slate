@@ -1,10 +1,13 @@
-var x = 1
-{
-    var y = 2
-    {
-        var z = 3
-        print x
-        print y
-        print z
-    }
+main(string[] args) {
+  var x = 1
+  {
+      var y = 2
+      {
+          var z = 3
+          print x
+          print y
+          print z
+      }
+  }
+  return
 }

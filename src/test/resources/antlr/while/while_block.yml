@@ -1,33 +1,51 @@
 ---
 class: CompilationUnitContext
 children:
-  - class: WhileLoopStatementContext
+  - class: MethodDeclarationContext
     children:
-      - class: WhileLoopContext
+      - class: TerminalNodeImpl
+        text: test
+      - class: BlockStatementContext
         children:
-          - class: TerminalNodeImpl
-            text: while
-          - class: BooleanLiteralContext
+          - class: BlockContext
             children:
               - class: TerminalNodeImpl
-                text: 'true'
-          - class: BlockStatementContext
-            children:
-              - class: BlockContext
+                text: '{'
+              - class: WhileLoopStatementContext
                 children:
-                  - class: TerminalNodeImpl
-                    text: '{'
-                  - class: PrintStatementContext
+                  - class: WhileLoopContext
                     children:
-                      - class: PrintContext
+                      - class: TerminalNodeImpl
+                        text: while
+                      - class: BooleanLiteralContext
                         children:
                           - class: TerminalNodeImpl
-                            text: print
-                          - class: StringLiteralContext
+                            text: 'true'
+                      - class: BlockStatementContext
+                        children:
+                          - class: BlockContext
                             children:
                               - class: TerminalNodeImpl
-                                text: "'Looping'"
-                  - class: TerminalNodeImpl
-                    text: '}'
+                                text: '{'
+                              - class: PrintStatementContext
+                                children:
+                                  - class: PrintContext
+                                    children:
+                                      - class: TerminalNodeImpl
+                                        text: print
+                                      - class: StringLiteralContext
+                                        children:
+                                          - class: TerminalNodeImpl
+                                            text: "'Looping'"
+                              - class: TerminalNodeImpl
+                                text: '}'
+              - class: ReturnStatementContext
+                children:
+                  - class: RetContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: return
+              - class: TerminalNodeImpl
+                text: '}'
   - class: TerminalNodeImpl
     text: <EOF>

@@ -3,8 +3,7 @@ package com.github.agmcc.slate.ast.statement;
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -43,17 +42,17 @@ public class ForTraditional implements For {
   }
 
   @Override
-  public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
+  public void generate(MethodVisitor mv, Scope scope) {
     final var checkLabel = new Label();
     final var trueLabel = new Label();
     final var endLabel = new Label();
 
     // Declare loop variable
-    init.generate(mv, varMap);
+    init.generate(mv, scope);
 
     // Check expression
     mv.visitLabel(checkLabel);
-    expression.push(mv, varMap);
+    expression.push(mv, scope);
     mv.visitJumpInsn(IFGT, trueLabel);
 
     // False - exit loop
@@ -61,8 +60,8 @@ public class ForTraditional implements For {
 
     // True - execute body and apply update
     mv.visitLabel(trueLabel);
-    body.generate(mv, varMap);
-    update.push(mv, varMap);
+    body.generate(mv, scope);
+    update.push(mv, scope);
     mv.visitInsn(POP); // discard return value for update expression
     mv.visitJumpInsn(GOTO, checkLabel);
 

@@ -5,11 +5,9 @@ public class Test {
 
   // access flags 0x9
   public static main([Ljava/lang/String;)V
-   L0
     LDC "Hello"
     ASTORE 1
     RETURN
-    LOCALVARIABLE message Ljava/lang/String; L0 L0 1
     MAXSTACK = 1
     MAXLOCALS = 2
 }

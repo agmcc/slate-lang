@@ -1,21 +1,39 @@
 ---
 class: CompilationUnitContext
 children:
-  - class: VarDeclarationStatementContext
+  - class: MethodDeclarationContext
     children:
-      - class: VarDeclarationContext
+      - class: TerminalNodeImpl
+        text: test
+      - class: BlockStatementContext
         children:
-          - class: TerminalNodeImpl
-            text: var
-          - class: AssignmentContext
+          - class: BlockContext
             children:
               - class: TerminalNodeImpl
-                text: message
-              - class: TerminalNodeImpl
-                text: =
-              - class: StringLiteralContext
+                text: '{'
+              - class: VarDeclarationStatementContext
                 children:
-                  - class: TerminalNodeImpl
-                    text: "'Hello, World!'"
+                  - class: VarDeclarationContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: var
+                      - class: AssignmentContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: message
+                          - class: TerminalNodeImpl
+                            text: =
+                          - class: StringLiteralContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: "'Hello, World!'"
+              - class: ReturnStatementContext
+                children:
+                  - class: RetContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: return
+              - class: TerminalNodeImpl
+                text: '}'
   - class: TerminalNodeImpl
     text: <EOF>

@@ -3,8 +3,7 @@ package com.github.agmcc.slate.ast.statement;
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -37,14 +36,14 @@ public class While implements Statement {
   }
 
   @Override
-  public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
+  public void generate(MethodVisitor mv, Scope scope) {
     final var startLabel = new Label();
     final var bodyLabel = new Label();
     final var endLabel = new Label();
 
     // Check condition
     mv.visitLabel(startLabel);
-    expression.push(mv, varMap);
+    expression.push(mv, scope);
     mv.visitJumpInsn(IFGT, bodyLabel);
 
     // If false, exit
@@ -52,7 +51,7 @@ public class While implements Statement {
 
     // If true, execute body and jump back to condition
     mv.visitLabel(bodyLabel);
-    body.generate(mv, varMap);
+    body.generate(mv, scope);
     mv.visitJumpInsn(GOTO, startLabel);
 
     mv.visitLabel(endLabel);

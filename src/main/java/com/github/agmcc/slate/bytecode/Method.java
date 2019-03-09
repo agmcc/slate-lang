@@ -4,11 +4,11 @@ import lombok.Data;
 import org.objectweb.asm.Type;
 
 @Data
-public class Variable {
+public class Method {
 
   private final String name;
 
-  private final Type type;
+  private final Type returnType;
 
-  private final int index;
+  private final String owner;
 }

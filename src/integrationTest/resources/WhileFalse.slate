@@ -1,3 +1,6 @@
-while false
-  print 'Error: Expected done'
-print 'done'
+main(string[] args) {
+  while false
+    print 'Error: Expected done'
+  print 'done'
+  return
+}

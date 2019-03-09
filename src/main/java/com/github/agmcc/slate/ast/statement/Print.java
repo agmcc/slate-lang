@@ -3,9 +3,8 @@ package com.github.agmcc.slate.ast.statement;
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
-import com.github.agmcc.slate.bytecode.Variable;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.io.PrintStream;
-import java.util.Map;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -35,20 +34,20 @@ public class Print implements Statement {
   }
 
   @Override
-  public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
+  public void generate(MethodVisitor mv, Scope scope) {
     mv.visitFieldInsn(
         GETSTATIC,
         Type.getInternalName(System.class),
         "out",
         Type.getDescriptor(PrintStream.class));
 
-    value.push(mv, varMap);
+    value.push(mv, scope);
 
     mv.visitMethodInsn(
         INVOKEVIRTUAL,
         Type.getInternalName(PrintStream.class),
         "println",
-        Type.getMethodDescriptor(Type.VOID_TYPE, value.getType(varMap)),
+        Type.getMethodDescriptor(Type.VOID_TYPE, value.getType(scope)),
         false);
   }
 }

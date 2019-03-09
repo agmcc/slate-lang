@@ -2,7 +2,12 @@ package com.github.agmcc.slate.antlr;
 
 import static com.github.agmcc.slate.antlr.SlateLexer.ADD;
 import static com.github.agmcc.slate.antlr.SlateLexer.AND;
+import static com.github.agmcc.slate.antlr.SlateLexer.ARRAY;
 import static com.github.agmcc.slate.antlr.SlateLexer.ASSIGN;
+import static com.github.agmcc.slate.antlr.SlateLexer.BOOL;
+import static com.github.agmcc.slate.antlr.SlateLexer.COLON;
+import static com.github.agmcc.slate.antlr.SlateLexer.COMMA;
+import static com.github.agmcc.slate.antlr.SlateLexer.DEC;
 import static com.github.agmcc.slate.antlr.SlateLexer.DECREMENT;
 import static com.github.agmcc.slate.antlr.SlateLexer.DEC_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.DIV;
@@ -16,6 +21,7 @@ import static com.github.agmcc.slate.antlr.SlateLexer.HIDDEN;
 import static com.github.agmcc.slate.antlr.SlateLexer.ID;
 import static com.github.agmcc.slate.antlr.SlateLexer.IF;
 import static com.github.agmcc.slate.antlr.SlateLexer.INCREMENT;
+import static com.github.agmcc.slate.antlr.SlateLexer.INT;
 import static com.github.agmcc.slate.antlr.SlateLexer.INT_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.LESS;
 import static com.github.agmcc.slate.antlr.SlateLexer.LESS_EQ;
@@ -24,8 +30,10 @@ import static com.github.agmcc.slate.antlr.SlateLexer.L_PAREN;
 import static com.github.agmcc.slate.antlr.SlateLexer.MUL;
 import static com.github.agmcc.slate.antlr.SlateLexer.NOT_EQUAL;
 import static com.github.agmcc.slate.antlr.SlateLexer.OR;
+import static com.github.agmcc.slate.antlr.SlateLexer.RETURN;
 import static com.github.agmcc.slate.antlr.SlateLexer.R_BRACE;
 import static com.github.agmcc.slate.antlr.SlateLexer.R_PAREN;
+import static com.github.agmcc.slate.antlr.SlateLexer.STRING;
 import static com.github.agmcc.slate.antlr.SlateLexer.STRING_LIT;
 import static com.github.agmcc.slate.antlr.SlateLexer.SUB;
 import static com.github.agmcc.slate.antlr.SlateLexer.TRUE_LIT;
@@ -381,5 +389,101 @@ class SlateLexerTest {
 
     // Then
     assertEquals(List.of(DECREMENT), actual);
+  }
+
+  @Test
+  void testReturn() {
+    // Given
+    final var src = "return";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(RETURN), actual);
+  }
+
+  @Test
+  void testIntType() {
+    // Given
+    final var src = "int";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(INT), actual);
+  }
+
+  @Test
+  void testDecType() {
+    // Given
+    final var src = "dec";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(DEC), actual);
+  }
+
+  @Test
+  void testStringType() {
+    // Given
+    final var src = "string";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(STRING), actual);
+  }
+
+  @Test
+  void testBoolType() {
+    // Given
+    final var src = "bool";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(BOOL), actual);
+  }
+
+  @Test
+  void testArrayType() {
+    // Given
+    final var src = "[]";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(ARRAY), actual);
+  }
+
+  @Test
+  void testComma() {
+    // Given
+    final var src = ",";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(COMMA), actual);
+  }
+
+  @Test
+  void testColon() {
+    // Given
+    final var src = ":";
+
+    // When
+    final var actual = getTokenTypes(src);
+
+    // Then
+    assertEquals(List.of(COLON), actual);
   }
 }

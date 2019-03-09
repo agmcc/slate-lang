@@ -2,8 +2,7 @@ package com.github.agmcc.slate.ast.expression;
 
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -32,12 +31,12 @@ public class BooleanLit implements Expression {
   }
 
   @Override
-  public Type getType(Map<String, Variable> varMap) {
+  public Type getType(Scope scope) {
     return Type.BOOLEAN_TYPE;
   }
 
   @Override
-  public void push(MethodVisitor mv, Map<String, Variable> varMap) {
+  public void push(MethodVisitor mv, Scope scope) {
     mv.visitInsn(getBooleanOpcode(value));
   }
 

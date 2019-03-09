@@ -3,8 +3,9 @@ package com.github.agmcc.slate.ast.statement;
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
+import com.github.agmcc.slate.bytecode.Scope;
 import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -31,13 +32,19 @@ public class VarDeclaration implements Statement {
   @Override
   public void process(Consumer<Node> operation) {
     operation.accept(this);
-    value.process(operation);
+    Optional.ofNullable(value).orElseThrow().process(operation);
   }
 
   @Override
-  public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
-    final var variable = varMap.get(varName);
-    value.pushAs(mv, varMap, variable.getType());
-    mv.visitVarInsn(variable.getType().getOpcode(ISTORE), variable.getIndex());
+  public void generate(MethodVisitor mv, Scope scope) {
+    final var type = Optional.ofNullable(value).orElseThrow().getType(scope);
+    final var index = scope.getNextVarIndex(type);
+    final var variable = new Variable(varName, type, index);
+
+    scope.add(variable);
+
+    value.pushAs(mv, scope, type);
+
+    mv.visitVarInsn(type.getOpcode(ISTORE), index);
   }
 }

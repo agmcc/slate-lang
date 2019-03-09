@@ -1,8 +1,7 @@
 package com.github.agmcc.slate.ast.expression;
 
 import com.github.agmcc.slate.ast.Position;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,11 +23,11 @@ public class PreDecrement implements IncrementDecrement {
   private Position position;
 
   @Override
-  public void push(MethodVisitor mv, Map<String, Variable> varMap) {
-    final var variable = varMap.get(text);
+  public void push(MethodVisitor mv, Scope scope) {
+    final var variable = scope.getVariable(text);
 
     mv.visitIincInsn(variable.getIndex(), -1);
 
-    mv.visitVarInsn(getType(varMap).getOpcode(ILOAD), variable.getIndex());
+    mv.visitVarInsn(getType(scope).getOpcode(ILOAD), variable.getIndex());
   }
 }

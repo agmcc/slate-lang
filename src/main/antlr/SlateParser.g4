@@ -2,9 +2,17 @@ parser grammar SlateParser;
 
 options { tokenVocab=SlateLexer; }
 
-compilationUnit: statement* EOF;
+compilationUnit: methodDeclaration* EOF;
 
-statement: varDeclaration # varDeclarationStatement
+methodDeclaration: ID (L_PAREN parameter (COMMA parameter)* R_PAREN)? (COLON returnType=type)? statement;
+
+parameter: type ID;
+
+type: (INT|DEC|STRING|BOOL)(ARRAY)?;
+
+statement: expression # expressionStatement
+         | ret # returnStatement
+         | varDeclaration # varDeclarationStatement
          | assignment # assignmentStatement
          | print # printStatement
          | block # blockStatement
@@ -26,10 +34,13 @@ whileLoop: WHILE expression body=statement;
 
 forLoop: FOR declaration=statement check=expression after=expression body=statement # forTraditional;
 
+ret: RETURN (value=expression)?;
+
 expression: left=expression operator=(DIV|MUL) right=expression # binaryOperation
           | left=expression operator=(ADD|SUB) right=expression # binaryOperation
           | left=expression operator=(GREATER|GREATER_EQ|EQUAL|NOT_EQUAL|LESS|LESS_EQ|AND|OR) right=expression # binaryOperation
           | L_PAREN expression R_PAREN # parenExpression
+          | ID L_PAREN (expression (COMMA expression)*)? R_PAREN # methodInvocation
           | ID # varReference
           | STRING_LIT # stringLiteral
           | INT_LIT # intLiteral

@@ -5,20 +5,18 @@ public class Test {
 
   // access flags 0x9
   public static main([Ljava/lang/String;)V
-   L0
     LDC 5
     LDC 3
-    IF_ICMPGT L1
+    IF_ICMPGT L0
     ICONST_0
-    GOTO L2
-   L1
+    GOTO L1
+   L0
    FRAME SAME
     ICONST_1
-   L2
+   L1
    FRAME SAME1 I
     ISTORE 1
     RETURN
-    LOCALVARIABLE valid I L0 L0 1
     MAXSTACK = 2
     MAXLOCALS = 2
 }

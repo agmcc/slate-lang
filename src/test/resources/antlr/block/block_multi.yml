@@ -1,19 +1,36 @@
 ---
 class: CompilationUnitContext
 children:
-  - class: BlockStatementContext
+  - class: MethodDeclarationContext
     children:
-      - class: BlockContext
+      - class: TerminalNodeImpl
+        text: test
+      - class: BlockStatementContext
         children:
-          - class: TerminalNodeImpl
-            text: '{'
-          # Statement 1
-          - class: VarDeclarationStatementContext
+          - class: BlockContext
             children:
-              - class: VarDeclarationContext
+              - class: TerminalNodeImpl
+                text: '{'
+              # Statement 1
+              - class: VarDeclarationStatementContext
                 children:
-                  - class: TerminalNodeImpl
-                    text: var
+                  - class: VarDeclarationContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: var
+                      - class: AssignmentContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: a
+                          - class: TerminalNodeImpl
+                            text: =
+                          - class: IntLiteralContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: '1'
+              # Statement 2
+              - class: AssignmentStatementContext
+                children:
                   - class: AssignmentContext
                     children:
                       - class: TerminalNodeImpl
@@ -23,21 +40,14 @@ children:
                       - class: IntLiteralContext
                         children:
                           - class: TerminalNodeImpl
-                            text: '1'
-          # Statement 2
-          - class: AssignmentStatementContext
-            children:
-              - class: AssignmentContext
+                            text: '2'
+              - class: ReturnStatementContext
                 children:
-                  - class: TerminalNodeImpl
-                    text: a
-                  - class: TerminalNodeImpl
-                    text: =
-                  - class: IntLiteralContext
+                  - class: RetContext
                     children:
                       - class: TerminalNodeImpl
-                        text: '2'
-          - class: TerminalNodeImpl
-            text: '}'
+                        text: return
+              - class: TerminalNodeImpl
+                text: '}'
   - class: TerminalNodeImpl
     text: <EOF>

@@ -1,0 +1,8 @@
+main(string[] args) {
+  var squared = square(5)
+  print squared
+  return
+}
+
+square(int n): int return n * n
+

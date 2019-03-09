@@ -8,26 +8,35 @@ import com.github.agmcc.slate.antlr.SlateParser.CompilationUnitContext;
 import com.github.agmcc.slate.antlr.SlateParser.ConditionStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.DecimalLiteralContext;
 import com.github.agmcc.slate.antlr.SlateParser.ExpressionContext;
+import com.github.agmcc.slate.antlr.SlateParser.ExpressionStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.ForLoopStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.ForTraditionalContext;
 import com.github.agmcc.slate.antlr.SlateParser.IntLiteralContext;
+import com.github.agmcc.slate.antlr.SlateParser.MethodDeclarationContext;
+import com.github.agmcc.slate.antlr.SlateParser.MethodInvocationContext;
+import com.github.agmcc.slate.antlr.SlateParser.ParameterContext;
 import com.github.agmcc.slate.antlr.SlateParser.ParenExpressionContext;
 import com.github.agmcc.slate.antlr.SlateParser.PostDecrementContext;
 import com.github.agmcc.slate.antlr.SlateParser.PostIncrementContext;
 import com.github.agmcc.slate.antlr.SlateParser.PreDecrementContext;
 import com.github.agmcc.slate.antlr.SlateParser.PreIncrementContext;
 import com.github.agmcc.slate.antlr.SlateParser.PrintStatementContext;
+import com.github.agmcc.slate.antlr.SlateParser.ReturnStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.StatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.StringLiteralContext;
+import com.github.agmcc.slate.antlr.SlateParser.TypeContext;
 import com.github.agmcc.slate.antlr.SlateParser.VarDeclarationStatementContext;
 import com.github.agmcc.slate.antlr.SlateParser.VarReferenceContext;
 import com.github.agmcc.slate.antlr.SlateParser.WhileLoopStatementContext;
 import com.github.agmcc.slate.ast.CompilationUnit;
+import com.github.agmcc.slate.ast.MethodDeclaration;
+import com.github.agmcc.slate.ast.Parameter;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.Expression;
 import com.github.agmcc.slate.ast.expression.IntLit;
+import com.github.agmcc.slate.ast.expression.MethodInvocation;
 import com.github.agmcc.slate.ast.expression.PostDecrement;
 import com.github.agmcc.slate.ast.expression.PostIncrement;
 import com.github.agmcc.slate.ast.expression.PreDecrement;
@@ -50,9 +59,11 @@ import com.github.agmcc.slate.ast.expression.binary.logic.OrExpression;
 import com.github.agmcc.slate.ast.statement.Assignment;
 import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
+import com.github.agmcc.slate.ast.statement.ExpressionStatement;
 import com.github.agmcc.slate.ast.statement.For;
 import com.github.agmcc.slate.ast.statement.ForTraditional;
 import com.github.agmcc.slate.ast.statement.Print;
+import com.github.agmcc.slate.ast.statement.Return;
 import com.github.agmcc.slate.ast.statement.Statement;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import com.github.agmcc.slate.ast.statement.While;
@@ -63,6 +74,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.objectweb.asm.Type;
 
 @Getter
 @Setter
@@ -80,7 +92,47 @@ public class ParseTreeMapperImpl
     }
 
     return new CompilationUnit(
-        ctx.statement().stream().map(this::toAst).collect(Collectors.toList()), toPosition(ctx));
+        ctx.methodDeclaration().stream().map(this::toAst).collect(Collectors.toList()),
+        toPosition(ctx));
+  }
+
+  private MethodDeclaration toAst(MethodDeclarationContext ctx) {
+    return new MethodDeclaration(
+        ctx.ID().getText(),
+        ctx.parameter().stream().map(this::toAst).collect(Collectors.toList()),
+        toAst(ctx.returnType),
+        toAst(ctx.statement()),
+        toPosition(ctx));
+  }
+
+  private Type toAst(TypeContext ctx) {
+    if (ctx == null) {
+      return Type.VOID_TYPE;
+    }
+
+    final Type type;
+
+    if (ctx.INT() != null) {
+      type = Type.INT_TYPE;
+    } else if (ctx.DEC() != null) {
+      type = Type.DOUBLE_TYPE;
+    } else if (ctx.STRING() != null) {
+      type = Type.getObjectType(Type.getInternalName(String.class));
+    } else if (ctx.BOOL() != null) {
+      type = Type.BOOLEAN_TYPE;
+    } else {
+      throw new UnsupportedOperationException(getErrorMsg(ctx));
+    }
+
+    if (ctx.ARRAY() != null) {
+      return Type.getType("[".concat(type.getDescriptor()));
+    }
+
+    return type;
+  }
+
+  private Parameter toAst(ParameterContext ctx) {
+    return new Parameter(toAst(ctx.type()), ctx.ID().getText(), toPosition(ctx));
   }
 
   private Statement toAst(StatementContext ctx) {
@@ -111,6 +163,12 @@ public class ParseTreeMapperImpl
       return new While(toAst(whileLoop.expression()), toAst(whileLoop.body), toPosition(ctx));
     } else if (ctx instanceof ForLoopStatementContext) {
       return toAst((ForLoopStatementContext) ctx);
+    } else if (ctx instanceof ReturnStatementContext) {
+      final ExpressionContext value = ((ReturnStatementContext) ctx).ret().value;
+      return new Return(value != null ? toAst(value) : null, toPosition(ctx));
+    } else if (ctx instanceof ExpressionStatementContext) {
+      return new ExpressionStatement(
+          toAst(((ExpressionStatementContext) ctx).expression()), toPosition(ctx));
     } else {
       throw new UnsupportedOperationException(getErrorMsg(ctx));
     }
@@ -124,12 +182,18 @@ public class ParseTreeMapperImpl
     } else if (ctx instanceof DecimalLiteralContext) {
       return new DecLit(ctx.getText(), toPosition(ctx));
     } else if (ctx instanceof StringLiteralContext) {
-      var text = ctx.getText();
+      final var text = ctx.getText();
       return new StringLit(text.substring(1, text.length() - 1), toPosition(ctx));
     } else if (ctx instanceof VarReferenceContext) {
       return new VarReference(ctx.getText(), toPosition(ctx));
     } else if (ctx instanceof ParenExpressionContext) {
       return toAst(((ParenExpressionContext) ctx).expression());
+    } else if (ctx instanceof MethodInvocationContext) {
+      final var methodInvocation = (MethodInvocationContext) ctx;
+      return new MethodInvocation(
+          methodInvocation.ID().getText(),
+          methodInvocation.expression().stream().map(this::toAst).collect(Collectors.toList()),
+          toPosition(ctx));
     } else if (ctx instanceof BooleanLiteralContext) {
       return new BooleanLit(ctx.getText(), toPosition(ctx));
     } else if (ctx instanceof PostIncrementContext) {

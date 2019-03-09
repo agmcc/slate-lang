@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.agmcc.slate.ast.CompilationUnit;
+import com.github.agmcc.slate.ast.MethodDeclaration;
+import com.github.agmcc.slate.ast.Parameter;
 import com.github.agmcc.slate.ast.expression.BooleanLit;
 import com.github.agmcc.slate.ast.expression.DecLit;
 import com.github.agmcc.slate.ast.expression.IntLit;
@@ -28,6 +30,7 @@ import com.github.agmcc.slate.ast.statement.Block;
 import com.github.agmcc.slate.ast.statement.Condition;
 import com.github.agmcc.slate.ast.statement.ForTraditional;
 import com.github.agmcc.slate.ast.statement.Print;
+import com.github.agmcc.slate.ast.statement.Statement;
 import com.github.agmcc.slate.ast.statement.VarDeclaration;
 import com.github.agmcc.slate.ast.statement.While;
 import java.io.PrintWriter;
@@ -39,6 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 
@@ -58,7 +62,8 @@ class JvmCompilerTest {
   @Test
   void testCompile_varDeclaration_nullExpression() {
     // Given
-    final var compilationUnit = new CompilationUnit(List.of(new VarDeclaration("count", null)));
+    final var compilationUnit =
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("count", null)));
 
     // When Then
     assertThrows(NoSuchElementException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
@@ -69,7 +74,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_int_valid(String value) {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("count", new IntLit(value))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("count", new IntLit(value))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -83,7 +88,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_int_invalidFormat(String value) {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("count", new IntLit(value))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("count", new IntLit(value))));
 
     // When Then
     assertThrows(NumberFormatException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
@@ -93,7 +98,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_int_nullValue() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("count", new IntLit(null))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("count", new IntLit(null))));
 
     // When Then
     assertThrows(NullPointerException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
@@ -103,7 +108,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_int() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("count", new IntLit("100"))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("count", new IntLit("100"))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -131,7 +136,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_decimal_valid(String value) {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("price", new DecLit(value))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("price", new DecLit(value))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -145,7 +150,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_decimal_invalidFormat(String value) {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("price", new IntLit(value))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("price", new IntLit(value))));
 
     // When Then
     assertThrows(NumberFormatException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
@@ -155,7 +160,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_decimal_nullValue() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("price", new DecLit(null))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("price", new DecLit(null))));
 
     // When Then
     assertThrows(NullPointerException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
@@ -165,7 +170,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_decimal() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("count", new DecLit("99.99"))));
+        createCompilationUnitWithMethod(List.of(new VarDeclaration("count", new DecLit("99.99"))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -179,7 +184,8 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_string() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("message", new StringLit("Hello"))));
+        createCompilationUnitWithMethod(
+            List.of(new VarDeclaration("message", new StringLit("Hello"))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -193,7 +199,8 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_string_nullValue() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("message", new StringLit(null))));
+        createCompilationUnitWithMethod(
+            List.of(new VarDeclaration("message", new StringLit(null))));
 
     // When Then
     assertThrows(
@@ -204,7 +211,8 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_boolean_true() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("true"))));
+        createCompilationUnitWithMethod(
+            List.of(new VarDeclaration("valid", new BooleanLit("true"))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -219,7 +227,8 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_boolean_false() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("false"))));
+        createCompilationUnitWithMethod(
+            List.of(new VarDeclaration("valid", new BooleanLit("false"))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -234,7 +243,8 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_boolean_invalid() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new VarDeclaration("valid", new BooleanLit("invalid"))));
+        createCompilationUnitWithMethod(
+            List.of(new VarDeclaration("valid", new BooleanLit("invalid"))));
 
     // When Then
     final var e =
@@ -249,7 +259,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_addition() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result", new AdditionExpression(new IntLit("1"), new IntLit("3")))));
@@ -266,7 +276,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_addition_mixedTypes() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result", new AdditionExpression(new IntLit("1"), new DecLit("3.5")))));
@@ -284,7 +294,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_addition_string() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result",
@@ -303,7 +313,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_subtraction() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result", new SubtractionExpression(new IntLit("10"), new IntLit("3")))));
@@ -321,7 +331,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_subtraction_mixedTypes() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result", new SubtractionExpression(new IntLit("10"), new DecLit("3")))));
@@ -339,7 +349,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_multiplication() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result", new MultiplicationExpression(new IntLit("10"), new IntLit("2")))));
@@ -357,7 +367,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_multiplication_mixedTypes() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result",
@@ -377,7 +387,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_division() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result", new DivisionExpression(new IntLit("10"), new IntLit("2")))));
@@ -394,7 +404,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_division_mixedTypes() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "result", new DivisionExpression(new IntLit("10"), new DecLit("0.5")))));
@@ -412,7 +422,7 @@ class JvmCompilerTest {
   void testCompile_varDeclaration_greater() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration(
                     "valid", new GreaterExpression(new IntLit("5"), new IntLit("3")))));
@@ -433,7 +443,7 @@ class JvmCompilerTest {
   void testCompile_assignment_int_valid() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("value", new IntLit("0")),
                 new Assignment("value", new IntLit("1"))));
@@ -451,7 +461,7 @@ class JvmCompilerTest {
   void testCompile_assignment_int_convertType() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("value", new DecLit("1.5")),
                 new Assignment("value", new IntLit("1"))));
@@ -469,17 +479,17 @@ class JvmCompilerTest {
   void testCompile_assignment_missingVarName() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(List.of(new Assignment("value", new IntLit("1"))));
+        createCompilationUnitWithMethod(List.of(new Assignment("value", new IntLit("1"))));
 
     // When Then
-    assertThrows(NullPointerException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
+    assertThrows(NoSuchElementException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
   }
 
   @Test
   void testCompile_assignment_validVarRef() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("a", new StringLit("Hello")),
                 new VarDeclaration("b", new StringLit("Goodbye")),
@@ -498,7 +508,7 @@ class JvmCompilerTest {
   void testCompile_assignment_invalidVarRef() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("a", new StringLit("Hello")),
                 new Assignment("a", new VarReference("unknown"))));
@@ -507,14 +517,14 @@ class JvmCompilerTest {
     final var e =
         assertThrows(RuntimeException.class, () -> compiler.compile(compilationUnit, CLASS_NAME));
 
-    assertEquals("Missing variable: unknown", e.getMessage());
+    assertEquals("Variable 'unknown' doesn't exist in scope", e.getMessage());
   }
 
   @Test
   void testCompile_assignment_invalidConversion() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("value", new StringLit("Hello")),
                 new Assignment("value", new IntLit("1"))));
@@ -535,7 +545,8 @@ class JvmCompilerTest {
   @Test
   void testCompile_print_int_valid() {
     // Given
-    final var compilationUnit = new CompilationUnit(List.of(new Print(new IntLit("10"))));
+    final var compilationUnit =
+        createCompilationUnitWithMethod(List.of(new Print(new IntLit("10"))));
 
     // When
     final var actual = compiler.compile(compilationUnit, CLASS_NAME);
@@ -551,7 +562,7 @@ class JvmCompilerTest {
   void testCompile_block() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("outer", new IntLit("3")),
                 new Block(List.of(new VarDeclaration("inner1", new IntLit("5")))),
@@ -569,7 +580,7 @@ class JvmCompilerTest {
   void testCompile_condition_and_boolean() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new Condition(
                     new AndExpression(new BooleanLit("true"), new BooleanLit("true")),
@@ -588,7 +599,7 @@ class JvmCompilerTest {
   void testCompile_condition_and_boolean_greater() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new Condition(
                     new AndExpression(
@@ -610,7 +621,7 @@ class JvmCompilerTest {
   void testCompile_condition_and_varRef() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("check", new BooleanLit("true")),
                 new Condition(
@@ -631,7 +642,7 @@ class JvmCompilerTest {
   void testCompile_condition_or_boolean() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new Condition(
                     new OrExpression(new BooleanLit("true"), new BooleanLit("false")),
@@ -650,7 +661,7 @@ class JvmCompilerTest {
   void testCompile_while() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(new While(new BooleanLit("true"), new Print(new StringLit("Looping")))));
 
     // When
@@ -665,7 +676,7 @@ class JvmCompilerTest {
   void testCompile_postIncrement() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("count", new IntLit("5")),
                 new VarDeclaration("result", new PostIncrement("count"))));
@@ -682,7 +693,7 @@ class JvmCompilerTest {
   void testCompile_preIncrement() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("count", new IntLit("5")),
                 new VarDeclaration("result", new PreIncrement("count"))));
@@ -699,7 +710,7 @@ class JvmCompilerTest {
   void testCompile_postDecrement() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("count", new IntLit("5")),
                 new VarDeclaration("result", new PostDecrement("count"))));
@@ -716,7 +727,7 @@ class JvmCompilerTest {
   void testCompile_preDecrement() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new VarDeclaration("count", new IntLit("5")),
                 new VarDeclaration("result", new PreDecrement("count"))));
@@ -733,7 +744,7 @@ class JvmCompilerTest {
   void testCompile_forTraditional() {
     // Given
     final var compilationUnit =
-        new CompilationUnit(
+        createCompilationUnitWithMethod(
             List.of(
                 new ForTraditional(
                     new VarDeclaration("i", new IntLit("0")),
@@ -763,5 +774,15 @@ class JvmCompilerTest {
     final var stringWriter = new StringWriter();
     CheckClassAdapter.verify(new ClassReader(bytes), false, new PrintWriter(stringWriter));
     return stringWriter.toString();
+  }
+
+  private CompilationUnit createCompilationUnitWithMethod(List<Statement> statements) {
+    return new CompilationUnit(
+        List.of(
+            new MethodDeclaration(
+                "main",
+                List.of(new Parameter(Type.getType(String[].class), "args")),
+                Type.VOID_TYPE,
+                new Block(statements))));
   }
 }

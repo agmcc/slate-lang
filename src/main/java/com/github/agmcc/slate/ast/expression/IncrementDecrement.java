@@ -1,8 +1,7 @@
 package com.github.agmcc.slate.ast.expression;
 
 import com.github.agmcc.slate.ast.Node;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import org.objectweb.asm.Type;
 
@@ -16,7 +15,7 @@ public interface IncrementDecrement extends Expression {
   }
 
   @Override
-  default Type getType(Map<String, Variable> varMap) {
-    return varMap.get(getText()).getType();
+  default Type getType(Scope scope) {
+    return scope.getVariable(getText()).getType();
   }
 }

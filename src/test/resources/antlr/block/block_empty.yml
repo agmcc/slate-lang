@@ -1,13 +1,23 @@
 ---
 class: CompilationUnitContext
 children:
-  - class: BlockStatementContext
+  - class: MethodDeclarationContext
     children:
-      - class: BlockContext
+      - class: TerminalNodeImpl
+        text: test
+      - class: BlockStatementContext
         children:
-          - class: TerminalNodeImpl
-            text: '{'
-          - class: TerminalNodeImpl
-            text: '}'
+          - class: BlockContext
+            children:
+              - class: TerminalNodeImpl
+                text: '{'
+              - class: ReturnStatementContext
+                children:
+                  - class: RetContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: return
+              - class: TerminalNodeImpl
+                text: '}'
   - class: TerminalNodeImpl
     text: <EOF>

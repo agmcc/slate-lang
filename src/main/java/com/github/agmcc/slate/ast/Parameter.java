@@ -1,8 +1,5 @@
-package com.github.agmcc.slate.ast.expression;
+package com.github.agmcc.slate.ast;
 
-import com.github.agmcc.slate.ast.Node;
-import com.github.agmcc.slate.ast.Position;
-import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -10,7 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 @Getter
@@ -19,7 +15,9 @@ import org.objectweb.asm.Type;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class StringLit implements Expression {
+public class Parameter implements Node {
+
+  private final Type type;
 
   private final String value;
 
@@ -28,15 +26,5 @@ public class StringLit implements Expression {
   @Override
   public void process(Consumer<Node> operation) {
     operation.accept(this);
-  }
-
-  @Override
-  public Type getType(Scope scope) {
-    return Type.getType(String.class);
-  }
-
-  @Override
-  public void push(MethodVisitor mv, Scope scope) {
-    mv.visitLdcInsn(value);
   }
 }

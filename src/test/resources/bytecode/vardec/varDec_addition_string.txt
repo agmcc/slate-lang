@@ -5,13 +5,11 @@ public class Test {
 
   // access flags 0x9
   public static main([Ljava/lang/String;)V
-   L0
     LDC "Hello, "
     LDC "World!"
     INVOKEVIRTUAL java/lang/String.concat (Ljava/lang/String;)Ljava/lang/String;
     ASTORE 1
     RETURN
-    LOCALVARIABLE result Ljava/lang/String; L0 L0 1
     MAXSTACK = 2
     MAXLOCALS = 2
 }

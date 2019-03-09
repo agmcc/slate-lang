@@ -5,14 +5,12 @@ public class Test {
 
   // access flags 0x9
   public static main([Ljava/lang/String;)V
-   L0
     LDC 10.0101
     LDC 2
     I2D
     DMUL
     DSTORE 1
     RETURN
-    LOCALVARIABLE result D L0 L0 1
     MAXSTACK = 4
     MAXLOCALS = 3
 }

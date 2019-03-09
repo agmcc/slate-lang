@@ -1,6 +1,5 @@
 package com.github.agmcc.slate.ast;
 
-import com.github.agmcc.slate.ast.statement.Statement;
 import java.util.List;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
@@ -18,13 +17,13 @@ import lombok.ToString;
 @ToString
 public class CompilationUnit implements Node {
 
-  private final List<Statement> statements;
+  private final List<MethodDeclaration> methods;
 
   private Position position;
 
   @Override
   public void process(Consumer<Node> operation) {
     operation.accept(this);
-    statements.forEach(s -> s.process(operation));
+    methods.forEach(s -> s.process(operation));
   }
 }

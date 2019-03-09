@@ -1,8 +1,7 @@
 package com.github.agmcc.slate.ast.expression.binary;
 
 import com.github.agmcc.slate.ast.expression.Expression;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import org.objectweb.asm.Type;
 
 public interface BinaryExpression extends Expression {
@@ -11,9 +10,9 @@ public interface BinaryExpression extends Expression {
 
   Expression getRight();
 
-  default Type getType(Map<String, Variable> varMap) {
-    final var leftType = getLeft().getType(varMap);
-    final var rightType = getRight().getType(varMap);
+  default Type getType(Scope scope) {
+    final var leftType = getLeft().getType(scope);
+    final var rightType = getRight().getType(scope);
 
     final Type stringType = Type.getType(String.class);
 

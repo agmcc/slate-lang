@@ -3,8 +3,7 @@ package com.github.agmcc.slate.ast.expression.binary.logic;
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -37,17 +36,17 @@ public class OrExpression implements LogicExpression {
   }
 
   @Override
-  public void push(MethodVisitor mv, Map<String, Variable> varMap) {
+  public void push(MethodVisitor mv, Scope scope) {
     // TODO: Assuming left and right evaluate to boolean
 
     final var trueLabel = new Label();
     final var endLabel = new Label();
 
-    left.push(mv, varMap);
+    left.push(mv, scope);
     mv.visitJumpInsn(IFGT, trueLabel); // if left true, push true and exit
 
     // if left false, push right
-    right.push(mv, varMap);
+    right.push(mv, scope);
     mv.visitJumpInsn(IFGT, trueLabel); // if right true, push true and exit
 
     mv.visitInsn(ICONST_0); // right false, push false and exit

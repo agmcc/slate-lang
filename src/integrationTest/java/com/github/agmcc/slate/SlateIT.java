@@ -11,9 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+// TODO: Will need temporary folder once compiler supports different output dir
 class SlateIT {
 
   private static final String SOURCE_EXT = ".slate";
@@ -80,10 +82,10 @@ class SlateIT {
     // Given
     final var src = getResourcePath("/BlocksInvalid.slate").toString();
 
-    final var expected = "No variable named 'inner' at [4,6]";
+    final var expected = "Variable 'inner' doesn't exist in scope";
 
     // When
-    final var e = assertThrows(ValidationException.class, () -> App.main(src));
+    final var e = assertThrows(NoSuchElementException.class, () -> App.main(src));
     assertEquals(expected, e.getMessage());
 
     assertTrue(Files.notExists(getClassFilePath(src)));
@@ -301,6 +303,28 @@ class SlateIT {
 
     // When
     final var clazz = classLoader.loadClass("ForTraditional");
+
+    final var main = clazz.getMethod("main", String[].class);
+    final var result = invoke(main, null, new Object[] {null});
+
+    // Then
+    assertNull(result.getReturnValue());
+    assertEquals(expected, result.getStdOut());
+  }
+
+  @Test
+  void testMethods() throws Exception {
+    // Given
+    final var src = getResourcePath("/Methods.slate").toString();
+    final var expected = "25\n";
+    // When
+    App.main(src);
+
+    // Then
+    assertTrue(Files.exists(getClassFilePath(src)));
+
+    // When
+    final var clazz = classLoader.loadClass("Methods");
 
     final var main = clazz.getMethod("main", String[].class);
     final var result = invoke(main, null, new Object[] {null});

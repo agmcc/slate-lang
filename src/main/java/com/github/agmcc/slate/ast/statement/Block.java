@@ -2,17 +2,19 @@ package com.github.agmcc.slate.ast.statement;
 
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
-import com.github.agmcc.slate.bytecode.Variable;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.objectweb.asm.MethodVisitor;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class Block implements Statement {
@@ -21,6 +23,13 @@ public class Block implements Statement {
 
   private Position position;
 
+  private Scope scope;
+
+  public Block(List<Statement> statements, Position position) {
+    this.statements = statements;
+    this.position = position;
+  }
+
   @Override
   public void process(Consumer<Node> operation) {
     operation.accept(this);
@@ -28,7 +37,8 @@ public class Block implements Statement {
   }
 
   @Override
-  public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
-    statements.forEach(s -> s.generate(mv, varMap));
+  public void generate(MethodVisitor mv, Scope scope) {
+    final Scope blockScope = new Scope(scope);
+    statements.forEach(s -> s.generate(mv, blockScope));
   }
 }

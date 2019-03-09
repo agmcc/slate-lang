@@ -1,17 +1,35 @@
 ---
 class: CompilationUnitContext
 children:
-  - class: AssignmentStatementContext
+  - class: MethodDeclarationContext
     children:
-      - class: AssignmentContext
+      - class: TerminalNodeImpl
+        text: test
+      - class: BlockStatementContext
         children:
-          - class: TerminalNodeImpl
-            text: price
-          - class: TerminalNodeImpl
-            text: =
-          - class: DecimalLiteralContext
+          - class: BlockContext
             children:
               - class: TerminalNodeImpl
-                text: '9.95'
+                text: '{'
+              - class: AssignmentStatementContext
+                children:
+                  - class: AssignmentContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: price
+                      - class: TerminalNodeImpl
+                        text: =
+                      - class: DecimalLiteralContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: '9.95'
+              - class: ReturnStatementContext
+                children:
+                  - class: RetContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: return
+              - class: TerminalNodeImpl
+                text: '}'
   - class: TerminalNodeImpl
     text: <EOF>

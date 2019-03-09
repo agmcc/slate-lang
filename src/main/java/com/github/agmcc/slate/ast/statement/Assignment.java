@@ -3,8 +3,7 @@ package com.github.agmcc.slate.ast.statement;
 import com.github.agmcc.slate.ast.Node;
 import com.github.agmcc.slate.ast.Position;
 import com.github.agmcc.slate.ast.expression.Expression;
-import com.github.agmcc.slate.bytecode.Variable;
-import java.util.Map;
+import com.github.agmcc.slate.bytecode.Scope;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -35,9 +34,9 @@ public class Assignment implements Statement {
   }
 
   @Override
-  public void generate(MethodVisitor mv, Map<String, Variable> varMap) {
-    final var variable = varMap.get(varName);
-    value.pushAs(mv, varMap, variable.getType());
+  public void generate(MethodVisitor mv, Scope scope) {
+    final var variable = scope.getVariable(varName);
+    value.pushAs(mv, scope, variable.getType());
     mv.visitVarInsn(variable.getType().getOpcode(ISTORE), variable.getIndex());
   }
 }

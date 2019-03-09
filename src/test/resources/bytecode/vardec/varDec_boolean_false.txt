@@ -5,11 +5,9 @@ public class Test {
 
   // access flags 0x9
   public static main([Ljava/lang/String;)V
-   L0
     ICONST_0
     ISTORE 1
     RETURN
-    LOCALVARIABLE valid Z L0 L0 1
     MAXSTACK = 1
     MAXLOCALS = 2
 }

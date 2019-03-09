@@ -1,20 +1,19 @@
 package com.github.agmcc.slate.bytecode;
 
-import java.util.Map;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 public interface ExpressionGenerator extends Opcodes {
 
-  Type getType(Map<String, Variable> varMap);
+  Type getType(Scope scope);
 
-  void push(MethodVisitor mv, Map<String, Variable> varMap);
+  void push(MethodVisitor mv, Scope scope);
 
-  default void pushAs(MethodVisitor mv, Map<String, Variable> varMap, Type target) {
-    push(mv, varMap);
+  default void pushAs(MethodVisitor mv, Scope scope, Type target) {
+    push(mv, scope);
 
-    final var type = getType(varMap);
+    final var type = getType(scope);
 
     if (!type.equals(target)) {
       if (type == Type.INT_TYPE && target == Type.DOUBLE_TYPE) {

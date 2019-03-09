@@ -1,63 +1,81 @@
 ---
 class: CompilationUnitContext
 children:
-  - class: ForLoopStatementContext
+  - class: MethodDeclarationContext
     children:
-      - class: ForTraditionalContext
+      - class: TerminalNodeImpl
+        text: test
+      - class: BlockStatementContext
         children:
-          - class: TerminalNodeImpl
-            text: for
-          - class: VarDeclarationStatementContext
+          - class: BlockContext
             children:
-              - class: VarDeclarationContext
+              - class: TerminalNodeImpl
+                text: '{'
+              - class: ForLoopStatementContext
                 children:
-                  - class: TerminalNodeImpl
-                    text: var
-                  - class: AssignmentContext
+                  - class: ForTraditionalContext
                     children:
                       - class: TerminalNodeImpl
-                        text: i
-                      - class: TerminalNodeImpl
-                        text: "="
-                      - class: IntLiteralContext
+                        text: for
+                      - class: VarDeclarationStatementContext
                         children:
-                          - class: TerminalNodeImpl
-                            text: '0'
-          - class: BinaryOperationContext
-            children:
-              - class: VarReferenceContext
-                children:
-                  - class: TerminalNodeImpl
-                    text: i
-              - class: TerminalNodeImpl
-                text: "<"
-              - class: IntLiteralContext
-                children:
-                  - class: TerminalNodeImpl
-                    text: '5'
-          - class: PostIncrementContext
-            children:
-              - class: TerminalNodeImpl
-                text: i
-              - class: TerminalNodeImpl
-                text: "++"
-          - class: BlockStatementContext
-            children:
-              - class: BlockContext
-                children:
-                  - class: TerminalNodeImpl
-                    text: '{'
-                  - class: PrintStatementContext
-                    children:
-                      - class: PrintContext
+                          - class: VarDeclarationContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: var
+                              - class: AssignmentContext
+                                children:
+                                  - class: TerminalNodeImpl
+                                    text: i
+                                  - class: TerminalNodeImpl
+                                    text: "="
+                                  - class: IntLiteralContext
+                                    children:
+                                      - class: TerminalNodeImpl
+                                        text: '0'
+                      - class: BinaryOperationContext
                         children:
-                          - class: TerminalNodeImpl
-                            text: print
                           - class: VarReferenceContext
                             children:
                               - class: TerminalNodeImpl
                                 text: i
-                  - class: TerminalNodeImpl
-                    text: '}'
+                          - class: TerminalNodeImpl
+                            text: "<"
+                          - class: IntLiteralContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: '5'
+                      - class: PostIncrementContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: i
+                          - class: TerminalNodeImpl
+                            text: "++"
+                      - class: BlockStatementContext
+                        children:
+                          - class: BlockContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: '{'
+                              - class: PrintStatementContext
+                                children:
+                                  - class: PrintContext
+                                    children:
+                                      - class: TerminalNodeImpl
+                                        text: print
+                                      - class: VarReferenceContext
+                                        children:
+                                          - class: TerminalNodeImpl
+                                            text: i
+                              - class: TerminalNodeImpl
+                                text: '}'
+              - class: ReturnStatementContext
+                children:
+                  - class: RetContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: return
+              - class: TerminalNodeImpl
+                text: '}'
   - class: TerminalNodeImpl
-    text: "<EOF>"
+    text: <EOF>

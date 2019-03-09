@@ -1,27 +1,45 @@
 ---
 class: CompilationUnitContext
 children:
-  - class: ConditionStatementContext
+  - class: MethodDeclarationContext
     children:
-      - class: ConditionContext
+      - class: TerminalNodeImpl
+        text: test
+      - class: BlockStatementContext
         children:
-          - class: TerminalNodeImpl
-            text: if
-          - class: BooleanLiteralContext
+          - class: BlockContext
             children:
               - class: TerminalNodeImpl
-                text: 'true'
-          - class: AssignmentStatementContext
-            children:
-              - class: AssignmentContext
+                text: '{'
+              - class: ConditionStatementContext
                 children:
-                  - class: TerminalNodeImpl
-                    text: a
-                  - class: TerminalNodeImpl
-                    text: =
-                  - class: IntLiteralContext
+                  - class: ConditionContext
                     children:
                       - class: TerminalNodeImpl
-                        text: '1'
+                        text: if
+                      - class: BooleanLiteralContext
+                        children:
+                          - class: TerminalNodeImpl
+                            text: 'true'
+                      - class: AssignmentStatementContext
+                        children:
+                          - class: AssignmentContext
+                            children:
+                              - class: TerminalNodeImpl
+                                text: a
+                              - class: TerminalNodeImpl
+                                text: =
+                              - class: IntLiteralContext
+                                children:
+                                  - class: TerminalNodeImpl
+                                    text: '1'
+              - class: ReturnStatementContext
+                children:
+                  - class: RetContext
+                    children:
+                      - class: TerminalNodeImpl
+                        text: return
+              - class: TerminalNodeImpl
+                text: '}'
   - class: TerminalNodeImpl
     text: <EOF>
