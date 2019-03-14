@@ -4,8 +4,8 @@ plugins {
     id 'com.github.sherter.google-java-format' version '0.8'
     id 'idea'
     id 'eclipse'
-    id 'com.github.onslip.gradle-one-jar' version '1.0.5'
     id 'org.unbroken-dome.test-sets' version '2.0.3'
+    id 'application'
 }
 
 repositories {
@@ -30,10 +30,6 @@ dependencies {
 
     implementation 'com.beust:jcommander:1.72'
 
-    runtime 'org.ow2.asm:asm:7.0'
-    runtime 'org.ow2.asm:asm-util:7.0'
-    runtime 'com.beust:jcommander:1.72'
-
     testCompileOnly 'org.projectlombok:lombok:1.18.4'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
 
@@ -49,12 +45,18 @@ dependencies {
 
     integrationTestImplementation sourceSets.test.output
 
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
 generateGrammarSource {
     arguments += ['-no-listener', '-package', 'com.github.agmcc.slate.antlr']
     outputDirectory = new File("$buildDir/generated-src/antlr/main/com/github/agmcc/slate/antlr")
+}
+
+task format {
+    dependsOn ':googleJavaFormat'
+    group 'build'
+    description 'Google Java Format'
 }
 
 tasks.withType(Test) {
@@ -65,19 +67,10 @@ tasks.withType(Test) {
     }
 }
 
-task format {
-    dependsOn ':googleJavaFormat'
-    group 'build'
-    description 'Google Java Format'
-}
-
-task fatJar(type: OneJar) {
-    group 'build'
-    description 'Creates executable JAR with all of the required dependencies'
-    mainClass = 'com.github.agmcc.slate.cli.SlateCli'
-}
-
-assemble.dependsOn fatJar
-
 check.dependsOn integrationTest
 integrationTest.mustRunAfter(test)
+
+application {
+    mainClassName 'com.github.agmcc.slate.cli.SlateCli'
+    applicationName 'slatec'
+}
