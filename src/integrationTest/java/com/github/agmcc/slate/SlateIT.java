@@ -37,7 +37,7 @@ class SlateIT {
     final var expected = "Hello, Slate!\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -61,7 +61,7 @@ class SlateIT {
     final var expected = "1\n2\n3\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -85,7 +85,7 @@ class SlateIT {
     final var expected = "Variable 'inner' doesn't exist in scope";
 
     // When
-    final var e = assertThrows(NoSuchElementException.class, () -> App.main(src));
+    final var e = assertThrows(NoSuchElementException.class, () -> new App().compile(src));
     assertEquals(expected, e.getMessage());
 
     assertTrue(Files.notExists(getClassFilePath(src)));
@@ -99,7 +99,7 @@ class SlateIT {
     final var expected = "4\n4.5\n2\n1.5\n90\n66.5\n12\n12.5\n46\n1000000\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -128,7 +128,7 @@ class SlateIT {
             + "true\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -152,7 +152,7 @@ class SlateIT {
     final var expected = "check\nvalid\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -176,7 +176,7 @@ class SlateIT {
     final var expected = "3>1&&5<6\nfalse\nfalse\n3>1&&5<6&&4!=3\nfalse\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -200,7 +200,7 @@ class SlateIT {
     final var expected = "true\ntrue\ntrue\nfalse\ntrue\ntrue\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -224,7 +224,7 @@ class SlateIT {
     final var expected = "10\n9\n8\n7\n6\n5\n4\n3\n2\n1\n0\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -248,7 +248,7 @@ class SlateIT {
     final var expected = "done\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -272,7 +272,7 @@ class SlateIT {
     final var expected = "5\n6\n" + "9\n9\n" + "3\n2\n" + "1\n1\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -296,7 +296,7 @@ class SlateIT {
     final var expected = "0\n1\n2\n3\n4\n" + "9\n8\n7\n6\n5\n4\n3\n2\n";
 
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -318,7 +318,7 @@ class SlateIT {
     final var src = getResourcePath("/Methods.slate").toString();
     final var expected = "25\n";
     // When
-    App.main(src);
+    new App().compile(src);
 
     // Then
     assertTrue(Files.exists(getClassFilePath(src)));
@@ -334,7 +334,7 @@ class SlateIT {
     assertEquals(expected, result.getStdOut());
   }
 
-  private Path getClassFilePath(String srcFile) {
+  private Path getClassFilePath(final String srcFile) {
     final var classPathStr = srcFile.replace(SOURCE_EXT, CLASS_EXT);
     return Paths.get(classPathStr);
   }

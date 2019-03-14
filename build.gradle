@@ -28,8 +28,11 @@ dependencies {
     implementation 'org.ow2.asm:asm:7.0'
     implementation 'org.ow2.asm:asm-util:7.0'
 
+    implementation 'com.beust:jcommander:1.72'
+
     runtime 'org.ow2.asm:asm:7.0'
     runtime 'org.ow2.asm:asm-util:7.0'
+    runtime 'com.beust:jcommander:1.72'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.4'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
@@ -71,7 +74,7 @@ task format {
 task fatJar(type: OneJar) {
     group 'build'
     description 'Creates executable JAR with all of the required dependencies'
-    mainClass = 'com.github.agmcc.slate.App'
+    mainClass = 'com.github.agmcc.slate.cli.SlateCli'
 }
 
 assemble.dependsOn fatJar

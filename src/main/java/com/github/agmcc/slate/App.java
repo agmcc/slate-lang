@@ -18,7 +18,7 @@ public class App {
 
   private static final String CLASS_EXTENSION = ".class";
 
-  public static void main(String... args) throws IOException {
+  public void compile(final String... args) throws IOException {
     if (args.length == 0) {
       throw new IllegalArgumentException("Missing source file");
     }
