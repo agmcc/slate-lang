@@ -12,8 +12,20 @@ class Arguments {
   private List<String> files = new ArrayList<>();
 
   @Parameter(
+      names = {"-l", "--log"},
+      description = "Log level")
+  private LogLevel logLevel;
+
+  @Parameter(
       names = {"-?", "-h", "--help"},
       description = "Print this help message",
       help = true)
   private boolean help;
+
+  enum LogLevel {
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR
+  }
 }

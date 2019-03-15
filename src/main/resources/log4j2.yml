@@ -1,0 +1,24 @@
+Configuration:
+  name: SlateLogConfig
+  thresholdFilter:
+    level: debug
+  appenders:
+    Console:
+      name: STDOUT
+      PatternLayout:
+        Pattern: "%highlight{%d %-5level [%t] %l: %msg%n%throwable}"
+  Loggers:
+    logger:
+      - name:  com.github.agmcc.slate.cli.logger
+        level: trace
+        additivity: false
+        ThreadContextMapFilter:
+          KeyValuePair:
+            key: test
+            value: 123
+        AppenderRef:
+          ref: STDOUT
+    Root:
+      level: warn
+      AppenderRef:
+        ref: STDOUT

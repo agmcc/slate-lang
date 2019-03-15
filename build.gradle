@@ -30,6 +30,13 @@ dependencies {
 
     implementation 'com.beust:jcommander:1.72'
 
+    implementation 'org.apache.logging.log4j:log4j-core:2.11.2'
+
+    runtimeOnly 'org.fusesource.jansi:jansi:1.17.1'
+
+    runtimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+    runtimeOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.7'
+
     testCompileOnly 'org.projectlombok:lombok:1.18.4'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
 
@@ -73,4 +80,5 @@ integrationTest.mustRunAfter(test)
 application {
     mainClassName 'com.github.agmcc.slate.cli.SlateCli'
     applicationName 'slatec'
+    applicationDefaultJvmArgs = ['-Dlog4j.skipJansi=false']
 }
