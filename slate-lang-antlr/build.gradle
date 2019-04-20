@@ -1,0 +1,12 @@
+plugins {
+    id 'antlr'
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.7.2'
+}
+
+generateGrammarSource {
+    arguments += ['-no-listener', '-package', 'com.github.agmcc.slate.antlr']
+    outputDirectory = new File("$buildDir/generated-src/antlr/main/com/github/agmcc/slate/antlr")
+}

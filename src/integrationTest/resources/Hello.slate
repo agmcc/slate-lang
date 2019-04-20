@@ -1,5 +1,0 @@
-main(string[] args) {
-  var message = 'Hello, Slate!'
-  print message
-  return
-}

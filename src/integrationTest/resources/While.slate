@@ -1,8 +1,0 @@
-main(string[] args) {
-  var countDown = 10
-  while countDown >= 0 {
-    print countDown
-    countDown = countDown - 1
-  }
-  return
-}
