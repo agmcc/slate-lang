@@ -1,0 +1,14 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':slate-parser')
+
+    implementation 'com.beust:jcommander:1.72'
+}
+
+application {
+    mainClassName 'com.github.agmcc.slate.cli.SlateCli'
+    applicationName 'slatec'
+}

@@ -13,6 +13,8 @@ subprojects {
     apply plugin: 'java-library'
 
     ext {
+        lombokVersion = '1.18.8'
+        daggerVersion = '2.22.1'
         junitVersion = '5.4.2'
     }
 
@@ -20,8 +22,23 @@ subprojects {
     targetCompatibility = 10
 
     dependencies {
+        /* PRODUCTION */
+
+        compileOnly "org.projectlombok:lombok:$lombokVersion"
+        annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+        implementation "com.google.dagger:dagger:$daggerVersion"
+        annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+
+        /* TEST */
+
+        testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+        testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
         testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+
+        testAnnotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     }
