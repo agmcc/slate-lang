@@ -14,12 +14,12 @@ subprojects {
 
     ext {
         lombokVersion = '1.18.8'
-        daggerVersion = '2.22.1'
+        daggerVersion = '2.23.1'
         junitVersion = '5.4.2'
     }
 
-    sourceCompatibility = 10
-    targetCompatibility = 10
+    sourceCompatibility = 12
+    targetCompatibility = 12
 
     dependencies {
         /* PRODUCTION */
