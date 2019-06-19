@@ -1,0 +1,10 @@
+ext {
+    asmVersion = '7.0'
+}
+
+dependencies {
+    implementation project(':slate-parser')
+
+    implementation "org.ow2.asm:asm:$asmVersion"
+    implementation "org.ow2.asm:asm-util:$asmVersion"
+}
