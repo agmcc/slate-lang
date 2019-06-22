@@ -41,7 +41,7 @@ public class TypeDeclarationVisitor implements NodeVisitor {
     cw.visit(
         VERSION,
         getClassModifiers(classDeclaration),
-        classDeclaration.getName(),
+        getInternalName(classDeclaration.getName()),
         null,
         Type.getInternalName(Object.class),
         null);
@@ -54,7 +54,7 @@ public class TypeDeclarationVisitor implements NodeVisitor {
     cw.visit(
         VERSION,
         getInterfaceModifiers(interfaceDeclaration),
-        interfaceDeclaration.getName(),
+        getInternalName(interfaceDeclaration.getName()),
         null,
         Type.getInternalName(Object.class),
         null);
@@ -72,5 +72,9 @@ public class TypeDeclarationVisitor implements NodeVisitor {
         | Optional.ofNullable(interfaceDeclaration.getModifier())
             .map(m -> modifiers.get(m.name()))
             .orElse(0);
+  }
+
+  private String getInternalName(final String canonicalName) {
+    return canonicalName.replace(".", "/");
   }
 }

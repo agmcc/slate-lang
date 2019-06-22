@@ -1,6 +1,7 @@
 package com.github.agmcc.slate.cli;
 
 import com.beust.jcommander.Parameter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -14,10 +15,15 @@ class Options {
   private List<String> sources = new ArrayList<>();
 
   @Parameter(
-      names = "--classes",
+      names = {"-c", "--classes"},
       validateWith = ClassValidator.class,
       description = "class file(s)")
   private List<String> classes = new ArrayList<>();
+
+  @Parameter(
+      names = {"-o", "--output"},
+      description = "output file directory")
+  private Path output;
 
   @Parameter(
       names = {"-?", "-h", "--help"},

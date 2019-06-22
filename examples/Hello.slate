@@ -1,0 +1,11 @@
+in com.example
+
+use foo.Bar
+use foo.Baz
+
+/*
+  Multi-line comment
+*/
+pub class Hello : Greeting, Message {
+
+}

@@ -1,5 +1,6 @@
 package com.github.agmcc.slate.parser.ast;
 
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -8,6 +9,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public class CompilationUnit implements Node {
+
+  private Set<ImportDeclaration> imports;
 
   private TypeDeclaration typeDeclaration;
 

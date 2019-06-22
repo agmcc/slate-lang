@@ -9,7 +9,7 @@ import org.objectweb.asm.ClassWriter;
 @Singleton
 public interface CompilerComponent {
 
-  CompilationUnitVisitor compilationUnitGenerator();
+  CompilationUnitVisitor compilationUnitVisitor();
 
   ClassWriter classWriter();
 }

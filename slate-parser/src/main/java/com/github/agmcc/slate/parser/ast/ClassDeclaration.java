@@ -1,6 +1,7 @@
 package com.github.agmcc.slate.parser.ast;
 
 import java.util.List;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -10,11 +11,11 @@ import lombok.ToString;
 @ToString
 public class ClassDeclaration implements TypeDeclaration {
 
-  // TODO: Super-types, body
-
   private ClassModifier modifier;
 
   private String name;
+
+  private Set<String> superTypes;
 
   private List<MethodDeclaration> methodDeclarations;
 

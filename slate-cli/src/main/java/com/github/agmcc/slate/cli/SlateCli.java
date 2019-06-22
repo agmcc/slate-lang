@@ -3,9 +3,11 @@ package com.github.agmcc.slate.cli;
 import com.github.agmcc.slate.compiler.SlateCompiler;
 import com.github.agmcc.slate.compiler.SlateFile;
 import com.github.agmcc.slate.parser.ParserFacade;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SlateCli {
@@ -23,14 +25,12 @@ public class SlateCli {
     final var jCommander = cliComponent.jCommander();
 
     jCommander.parse(args);
+    System.out.println("Options: " + options);
 
     if (options.isHelp()) {
       jCommander.usage();
       return;
     }
-
-    System.out.println("Sources: " + options.getSources());
-    System.out.println("Classes: " + options.getClasses());
 
     final var compilationUnits =
         options
@@ -44,12 +44,24 @@ public class SlateCli {
     compilationUnits
         .stream()
         .map(SlateCompiler::compileCompilationUnit)
-        .forEach(SlateCli::writeToFile);
+        .forEach(
+            f -> writeToFile(f, Optional.ofNullable(options.getOutput()).orElse(Paths.get(""))));
   }
 
-  private static void writeToFile(final SlateFile slateFile) {
-    try (final var os = new BufferedOutputStream(new FileOutputStream(slateFile.getFileName()))) {
-      os.write(slateFile.getData());
+  private static void writeToFile(final SlateFile slateFile, final Path rootDir) {
+
+    final var path = rootDir.resolve(slateFile.getFilePath());
+
+    try {
+      final var parentDir = path.getParent();
+      if (parentDir != null) {
+        Files.createDirectories(parentDir);
+      }
+
+      if (!Files.exists(path)) {
+        Files.createFile(path);
+      }
+      Files.write(path, slateFile.getData());
     } catch (final IOException e) {
       e.printStackTrace();
     }
