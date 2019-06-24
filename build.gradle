@@ -52,6 +52,10 @@ subprojects {
     }
 }
 
+googleJavaFormat {
+    toolVersion = '1.7'
+}
+
 task format {
     dependsOn ':googleJavaFormat'
     group 'build'
