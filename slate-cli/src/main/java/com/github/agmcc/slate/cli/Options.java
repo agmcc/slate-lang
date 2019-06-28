@@ -16,8 +16,7 @@ class Options {
 
   @Parameter(
       names = {"-c", "--classes"},
-      validateWith = ClassValidator.class,
-      description = "class file(s)")
+      description = "class dir(s)")
   private List<String> classes = new ArrayList<>();
 
   @Parameter(

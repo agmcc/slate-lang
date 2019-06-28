@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     antlr 'org.antlr:antlr4:4.7.2'
+    implementation 'com.google.guava:guava:28.0-jre'
 }
 
 generateGrammarSource {

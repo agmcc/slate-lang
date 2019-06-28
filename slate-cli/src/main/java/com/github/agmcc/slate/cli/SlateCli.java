@@ -33,16 +33,13 @@ public class SlateCli {
     }
 
     final var compilationUnits =
-        options
-            .getSources()
-            .stream()
-            .map(ParserFacade::parseCompilationUnit)
+        options.getSources().stream()
+            .map(s -> ParserFacade.parseCompilationUnit(s, options.getClasses()))
             .collect(Collectors.toList());
 
     compilationUnits.forEach(System.out::println);
 
-    compilationUnits
-        .stream()
+    compilationUnits.stream()
         .map(SlateCompiler::compileCompilationUnit)
         .forEach(
             f -> writeToFile(f, Optional.ofNullable(options.getOutput()).orElse(Paths.get(""))));
