@@ -1,0 +1,12 @@
+Configuration:
+  name: SlateLogConfig
+  appenders:
+    Console:
+      name: STDOUT
+      PatternLayout:
+        Pattern: "%d %-5level %c: %m%n%ex"
+  Loggers:
+    Root:
+      level: WARN
+      AppenderRef:
+        ref: STDOUT

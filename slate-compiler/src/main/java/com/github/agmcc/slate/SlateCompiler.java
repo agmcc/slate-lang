@@ -3,17 +3,21 @@ package com.github.agmcc.slate;
 import java.nio.file.Path;
 import java.util.List;
 import javax.inject.Inject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /** Entry point for compiler api. */
 @CompilerScope
 public class SlateCompiler {
 
+  private static final Logger LOGGER = LogManager.getLogger(SlateCompiler.class);
+
   @Inject
   public SlateCompiler() {}
 
   public CompilationResult compile(final List<Path> sources, final List<Path> classes) {
-    System.out.println("Sources: " + sources);
-    System.out.println("Classes: " + classes);
+    LOGGER.debug("Sources: {}", sources);
+    LOGGER.debug("Classes: {}", classes);
 
     /*
     Process source files to get parse tree

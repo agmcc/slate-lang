@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.logging.log4j.Level;
 
 @CliScope
 @Getter
@@ -28,6 +29,12 @@ class Options {
       names = {"-o", "--output"},
       description = "output file directory")
   private Path output;
+
+  @Parameter(
+      names = {"-l", "--log"},
+      description = "Log level",
+      converter = LogLevelConverter.class)
+  private Level logLevel;
 
   @Parameter(
       names = {"-?", "-h", "--help"},
