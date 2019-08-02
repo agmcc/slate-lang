@@ -4,21 +4,22 @@ import com.beust.jcommander.JCommander;
 import dagger.Module;
 import dagger.Provides;
 import java.util.Properties;
-import javax.inject.Singleton;
-import lombok.AllArgsConstructor;
 
 @Module
-@AllArgsConstructor
 class JCommanderModule {
 
-  private final Options options;
-
   @Provides
-  @Singleton
-  JCommander provideJCommander(final Properties properties) {
-    return JCommander.newBuilder()
-        .addObject(options)
-        .programName(properties.getProperty("app-name"))
-        .build();
+  @CliScope
+  JCommander provideJCommander(
+      final Options options, final Properties properties, final String[] args) {
+    final var jCommander =
+        JCommander.newBuilder()
+            .addObject(options)
+            .programName(properties.getProperty("app-name"))
+            .build();
+
+    jCommander.parse(args);
+
+    return jCommander;
   }
 }

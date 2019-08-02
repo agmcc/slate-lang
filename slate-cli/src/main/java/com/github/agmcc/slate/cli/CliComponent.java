@@ -1,12 +1,25 @@
 package com.github.agmcc.slate.cli;
 
-import com.beust.jcommander.JCommander;
+import com.github.agmcc.slate.CompilerComponent;
+import dagger.BindsInstance;
 import dagger.Component;
-import javax.inject.Singleton;
 
-@Component(modules = {JCommanderModule.class, PropertiesModule.class})
-@Singleton
+@Component(
+    modules = {JCommanderModule.class, PropertiesModule.class},
+    dependencies = CompilerComponent.class)
+@CliScope
 public interface CliComponent {
 
-  JCommander jCommander();
+  SlateCli slateCli();
+
+  @Component.Builder
+  interface Builder {
+
+    @BindsInstance
+    Builder args(String[] args);
+
+    Builder compilerComponent(CompilerComponent compilerComponent);
+
+    CliComponent build();
+  }
 }

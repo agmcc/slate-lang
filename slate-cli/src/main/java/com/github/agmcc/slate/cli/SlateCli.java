@@ -1,30 +1,40 @@
 package com.github.agmcc.slate.cli;
 
-import com.github.agmcc.slate.compiler.SlateCompiler;
-import com.github.agmcc.slate.compiler.SlateFile;
-import com.github.agmcc.slate.parser.ParserFacade;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.beust.jcommander.JCommander;
+import com.github.agmcc.slate.DaggerCompilerComponent;
+import com.github.agmcc.slate.SlateCompiler;
+import javax.inject.Inject;
 
+@CliScope
 public class SlateCli {
 
+  private JCommander jCommander;
+
+  private Options options;
+
+  private SlateCompiler slateCompiler;
+
+  @Inject
+  public SlateCli(
+      final JCommander jCommander, final Options options, final SlateCompiler slateCompiler) {
+    this.jCommander = jCommander;
+    this.options = options;
+    this.slateCompiler = slateCompiler;
+  }
+
   public static void main(final String[] args) {
-
-    final var options = new Options();
-
-    final var cliComponent =
+    final CliComponent cliComponent =
         DaggerCliComponent.builder()
-            .jCommanderModule(new JCommanderModule(options))
-            .propertiesModule(new PropertiesModule("/app.properties"))
+            .args(args)
+            .compilerComponent(DaggerCompilerComponent.create())
             .build();
 
-    final var jCommander = cliComponent.jCommander();
+    cliComponent.slateCli().run();
+  }
 
-    jCommander.parse(args);
+  public void run() {
+    System.out.println("Running");
+
     System.out.println("Options: " + options);
 
     if (options.isHelp()) {
@@ -32,35 +42,8 @@ public class SlateCli {
       return;
     }
 
-    final var compilationUnits =
-        options.getSources().stream()
-            .map(s -> ParserFacade.parseCompilationUnit(s, options.getClasses()))
-            .collect(Collectors.toList());
+    final var result = slateCompiler.compile(null, null);
 
-    compilationUnits.forEach(System.out::println);
-
-    compilationUnits.stream()
-        .map(SlateCompiler::compileCompilationUnit)
-        .forEach(
-            f -> writeToFile(f, Optional.ofNullable(options.getOutput()).orElse(Paths.get(""))));
-  }
-
-  private static void writeToFile(final SlateFile slateFile, final Path rootDir) {
-
-    final var path = rootDir.resolve(slateFile.getFilePath());
-
-    try {
-      final var parentDir = path.getParent();
-      if (parentDir != null) {
-        Files.createDirectories(parentDir);
-      }
-
-      if (!Files.exists(path)) {
-        Files.createFile(path);
-      }
-      Files.write(path, slateFile.getData());
-    } catch (final IOException e) {
-      e.printStackTrace();
-    }
+    result.getErrors().forEach(e -> System.out.println("Error: " + e));
   }
 }

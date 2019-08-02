@@ -4,12 +4,17 @@ import com.beust.jcommander.Parameter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import lombok.Getter;
 import lombok.ToString;
 
+@CliScope
 @Getter
 @ToString
 class Options {
+
+  @Inject
+  Options() {}
 
   @Parameter(description = "source file(s)", validateWith = SourceValidator.class, required = true)
   private List<String> sources = new ArrayList<>();

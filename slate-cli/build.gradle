@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':slate-parser')
     implementation project(':slate-compiler')
 
     implementation 'com.beust:jcommander:1.72'

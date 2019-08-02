@@ -1,0 +1,13 @@
+in factory
+
+use factory.parts.Engine
+use java.time.LocalDate
+
+pub class Car {
+
+  // Reference to class compiled from source
+  pub Engine engine
+
+  LocalDate productionDate, releaseDate
+
+}

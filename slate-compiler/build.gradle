@@ -1,10 +1,22 @@
+plugins {
+    id 'antlr'
+}
+
 ext {
     asmVersion = '7.0'
 }
 
 dependencies {
-    implementation project(':slate-parser')
+    antlr 'org.antlr:antlr4:4.7.2'
+
+    implementation 'com.google.guava:guava:28.0-jre'
 
     implementation "org.ow2.asm:asm:$asmVersion"
     implementation "org.ow2.asm:asm-util:$asmVersion"
 }
+
+generateGrammarSource {
+    arguments += ['-no-listener', '-visitor', '-package', 'com.github.agmcc.slate.parser']
+    outputDirectory = new File("$buildDir/generated-src/antlr/main/com/github/agmcc/slate/parser")
+}
+
